@@ -13,22 +13,22 @@
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
-    <v-btn class="mx-2" active-class>
+    <v-btn class="mx-2">
       <router-link
         v-for="routes in links1"
         v-bind:key="routes.id"
         :to="`${routes.page}`"
       >
-        {{ routes.text }}
+        {{ routes.title }}
       </router-link>
     </v-btn>
-    <v-btn class="mx-2" active-class>
+    <v-btn class="mx-2">
       <router-link
         v-for="routes in links2"
         v-bind:key="routes.id"
         :to="`${routes.page}`"
       >
-        {{ routes.text }}
+        {{ routes.title }}
       </router-link>
     </v-btn>
   </v-app-bar>
@@ -49,15 +49,15 @@ export default {
       links1: [
         {
           id: 2,
-          text: "Log In",
+          title: "Log In",
           page: "/login",
         },
       ],
       links2: [
         {
           id: 3,
-          text: "Sign In",
-          page: "/signin",
+          title: "Sign Up",
+          page: "/signup",
         },
       ],
     };
