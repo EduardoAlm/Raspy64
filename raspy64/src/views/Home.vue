@@ -1,18 +1,24 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <mainpage></mainpage>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
+import mainpage from "../components/mainpage/mainpage.vue";
+import * as Cookies from "js-cookie";
 export default {
   name: "Home",
   components: {
-    HelloWorld
+    mainpage
+  },
+  mounted() {
+    console.log(Cookies.get("stop"));
+    if (Cookies.get("stop") === "false") {
+      window.location.reload(true);
+      Cookies.set("stop", true);
+      console.log(Cookies.get("stop"));
+    }
   }
 };
 </script>
