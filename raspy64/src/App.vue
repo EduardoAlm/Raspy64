@@ -1,57 +1,27 @@
 <template>
-  <div id="app">
-    <div v-if="this.loggedIn == 1">
-      <Navlogged></Navlogged>
-    </div>
-    <div v-else>
-      <Navnotlogged></Navnotlogged>
-    </div>
-    <router-view />
-  </div>
+  <v-app>
+    <v-content>
+      <navbarnolog />
+    </v-content>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
+  </v-app>
 </template>
 
-
 <script>
-import Navlogged from "./components/mainpage/navbarlog.vue";
-import Navnotlogged from "./components/mainpage/navbarnolog.vue";
-import * as Cookies from "js-cookie";
+//import navbar from "./components/mainpage/navbarlog";
+import navbarnolog from "./components/mainpage/navbarnolog";
 
 export default {
-  name: "app",
-  data() {
-    return {
-      loggedIn: 0
-    };
-  },
-  mounted() {
-    this.loggedIn = Cookies.get("loggedIn");
-  },
+  name: "App",
+
   components: {
-    Navlogged: Navlogged,
-    Navnotlogged: Navnotlogged
-  }
+    navbarnolog,
+  },
+
+  data: () => ({
+    //
+  }),
 };
 </script>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>

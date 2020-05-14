@@ -5,12 +5,12 @@
 </template>
 
 <script>
-import mainpage from "../components/mainpage/mainpage.vue";
+import mainpage from "../components/mainpage/mainpage";
 import * as Cookies from "js-cookie";
 export default {
   name: "Home",
   components: {
-    mainpage
+    mainpage,
   },
   mounted() {
     console.log(Cookies.get("stop"));
@@ -19,6 +19,6 @@ export default {
       Cookies.set("stop", true);
       console.log(Cookies.get("stop"));
     }
-  }
+  },
 };
 </script>
