@@ -13,24 +13,31 @@
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
-    <v-btn class="mx-2">
-      <router-link
-        v-for="routes in links1"
-        v-bind:key="routes.id"
-        :to="`${routes.page}`"
-      >
-        {{ routes.title }}
-      </router-link>
-    </v-btn>
-    <v-btn class="mx-2">
-      <router-link
-        v-for="routes in links2"
-        v-bind:key="routes.id"
-        :to="`${routes.page}`"
-      >
-        {{ routes.title }}
-      </router-link>
-    </v-btn>
+    <div v-if="!userLogedIn">
+      <v-btn class="mx-2">
+        <router-link
+          v-for="routes in links1"
+          v-bind:key="routes.id"
+          :to="`${routes.page}`"
+        >
+          {{ routes.title }}
+        </router-link>
+      </v-btn>
+      <v-btn class="mx-2">
+        <router-link
+          v-for="routes in links2"
+          v-bind:key="routes.id"
+          :to="`${routes.page}`"
+        >
+          {{ routes.title }}
+        </router-link>
+      </v-btn>
+    </div>
+    <div v-else>
+      <v-btn @click="logoutFromFirebase()">
+        Log Out
+      </v-btn>
+    </div>
   </v-app-bar>
 </template>
 
@@ -61,6 +68,16 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    userLogedIn() {
+      return this.$store.getters.user;
+    },
+  },
+  methods: {
+    logoutFromFirebase() {
+      this.$store.dispatch("signOutAction");
+    },
   },
 };
 </script>

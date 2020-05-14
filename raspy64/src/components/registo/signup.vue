@@ -49,8 +49,6 @@
 </template>
 
 <script>
-import * as firebase from "firebase";
-
 export default {
   data: () => ({
     passwordShow: false,
@@ -72,17 +70,11 @@ export default {
       }
     },
     registerWithFirebase() {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password)
-        .then((response) => {
-          alert("success");
-          console.log(response);
-        })
-        .catch((error) => {
-          alert("failure");
-          console.log(error);
-        });
+      const user = {
+        email: this.email,
+        password: this.password,
+      };
+      this.$store.dispatch("signUpAction", user);
     },
     reset() {
       this.$refs.form.reset();
