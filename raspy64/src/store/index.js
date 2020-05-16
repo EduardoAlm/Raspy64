@@ -49,6 +49,7 @@ export default new Vuex.Store({
           commit("setUser", response.user.uid);
           commit("setError", null);
           commit("setStatus", "success");
+          return true;
         })
         .catch((error) => {
           commit("setError", error.message);

@@ -8,7 +8,6 @@ import vuetify from "./plugins/vuetify";
 import * as firebase from "firebase";
 
 Vue.config.productionTip = false;
-
 Vue.use(VModal);
 
 new Vue({
