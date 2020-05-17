@@ -5,7 +5,7 @@ import api from "../api/api";
 
 Vue.use(Vuex);
 
-const apiRoot = "http://0.0.0.0:8000";
+const apiRoot = "http://localhost:8000";
 
 export default new Vuex.Store({
   state: {
@@ -14,6 +14,8 @@ export default new Vuex.Store({
     status: null,
     error: null,
     apierror: null,
+    useruid: null,
+    userphone: null,
   },
   mutations: {
     setUser(state, payload) {
@@ -29,7 +31,11 @@ export default new Vuex.Store({
       state.error = payload;
     },
     GET_USERPHONE: function(state, response) {
-      console.log(state.userinfo);
+      console.log(state.userphone);
+      state.userinfo = response.body;
+    },
+    GET_USERUID: function(state, response) {
+      console.log(state.useruid);
       state.userinfo = response.body;
     },
     POST_USER: function(state, response) {
@@ -38,12 +44,18 @@ export default new Vuex.Store({
     // Note that we added one more for logging out errors.
     API_FAIL: function(state, error) {
       console.error(error);
-      if (error.url == "http://0.0.0.0:8000/") {
+      if (error.url == "http://localhost:8000/") {
         state.apierror = error;
       }
     },
   },
   actions: {
+    async get_useruid(store, email) {
+      return await api
+        .get(apiRoot + "/getuseruid/" + email + "/")
+        .then((response) => store.commit("GET_USERUID", response))
+        .catch((error) => store.commit("API_FAIL", error));
+    },
     async get_userphone(store, uid) {
       return await api
         .get(apiRoot + "/getuserphone/" + uid + "/")
@@ -75,7 +87,7 @@ export default new Vuex.Store({
         });
     },
     async signInAction({ commit }, payload) {
-      console.log(await this.$store.dispatch("get_user", this.state.user));
+      console.log(this.$store.dispatch("get_user", this.state.user));
       firebase
         .auth()
         .signInWithEmailAndPassword(payload.email, payload.password)

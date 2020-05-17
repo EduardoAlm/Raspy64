@@ -3,24 +3,10 @@
     <v-layout row wrap>
       <v-flex>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field
-            v-model="username"
-            label="User Name"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
-            required
-          ></v-text-field>
+          <v-text-field v-model="username" label="User Name" required></v-text-field>
+          <v-text-field v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
 
-          <v-text-field
-            v-model="phonenumber"
-            :rules="phoneRules"
-            label="Phone Number"
-            required
-          ></v-text-field>
+          <v-text-field v-model="phonenumber" :rules="phoneRules" label="Phone Number" required></v-text-field>
 
           <v-text-field
             v-model="password"
@@ -42,13 +28,7 @@
             @click:append="confirmPasswordShow = !confirmPasswordShow"
           ></v-text-field>
 
-          <v-btn
-            :disabled="!valid"
-            class="mx-2"
-            color="success"
-            @click="validate"
-            >Register</v-btn
-          >
+          <v-btn :disabled="!valid" class="mx-2" color="success" @click="validate">Register</v-btn>
 
           <v-btn color="error" class="mx-2" @click="reset">Reset Fields</v-btn>
         </v-form>
@@ -67,16 +47,16 @@ export default {
     phonenumber: "",
     email: "",
     phoneRules: [
-      (v) => !!v || "Phone Number is required",
-      (v) => /.+351.+/.test(v) || "Phone number must be valid (+351 ...)",
+      v => !!v || "Phone Number is required",
+      v => /.+351.+/.test(v) || "Phone number must be valid (+351 ...)"
     ],
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+/.test(v) || "E-mail must be valid",
+      v => !!v || "E-mail is required",
+      v => /.+@.+/.test(v) || "E-mail must be valid"
     ],
     password: "",
     confirmPassword: "",
-    passwordRules: [(v) => !!v || "Password and Confirm password Required"],
+    passwordRules: [v => !!v || "Password and Confirm password Required"]
   }),
   methods: {
     validate() {
@@ -84,30 +64,32 @@ export default {
         this.registerWithFirebase();
       }
     },
-    async registerWithFirebase() {
+    registerWithFirebase() {
       const user = {
         email: this.email,
         password: this.password,
         phonenumber: this.phonenumber,
-        username: this.username,
+        username: this.username
       };
 
       this.$store.dispatch("signUpAction", user);
-      const uid = await this.$store.state.user;
+
+      const uid = this.$store.state.user;
+      console.log(uid);
 
       var dict = {
         [uid]: {
           Telemovel: user.phonenumber,
           Username: user.username,
           Raspadinha: "0",
-          Email: user.email,
-        },
+          Email: user.email
+        }
       };
-      console.log(await this.$store.dispatch("post_user", dict));
+      console.log(this.$store.dispatch("post_user", dict));
     },
     reset() {
       this.$refs.form.reset();
-    },
-  },
+    }
+  }
 };
 </script>
