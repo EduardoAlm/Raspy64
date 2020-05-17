@@ -91,15 +91,18 @@ export default {
         phonenumber: this.phonenumber,
         username: this.username,
       };
+
       this.$store.dispatch("signUpAction", user);
       const uid = this.$store.state.user;
-      var dict = {};
-      dict["uid"] = uid;
-      dict["Telemovel"] = user.phonenumber;
-      dict["Username"] = user.username;
-      dict["Raspadinha"] = "0";
 
-      console.log(await this.$store.dispatch("post_user", uid, dict));
+      var dict = {
+        [uid]: {
+          Telemovel: user.phonenumber,
+          Username: user.username,
+          Raspadinha: "0",
+        },
+      };
+      console.log(await this.$store.dispatch("post_user", dict));
     },
     reset() {
       this.$refs.form.reset();

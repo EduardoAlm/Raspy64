@@ -35,7 +35,7 @@ database = firebase.database()
 class UserGetView(APIView):
     def get(self, request, format=None, id=None):
         try:
-            users = database.child("Users").child(id).get()
+            users = database.child("Users/").child(id).get()
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(users.val(), status=status.HTTP_200_OK)
@@ -47,7 +47,7 @@ class UserPostView(APIView):
     def post(self, request, format=None, id=None):
         data = request.data
         try:
-            database.child("Users").child(id).update(data)
+            database.child("Users/").update(data)
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)

@@ -30,6 +30,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('getuser/<str:id>/',
          UserGetView().as_view(), name='get_user'),
-    path('postuser/<str:id>/',
-         UserPostView().as_view(), name='pos_tuser'),
+    path('postuser/',
+         UserPostView().as_view(), name='post_user'),
 ]

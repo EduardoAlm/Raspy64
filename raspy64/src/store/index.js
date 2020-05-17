@@ -50,10 +50,10 @@ export default new Vuex.Store({
         .then((response) => store.commit("GET_USER", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
-    async post_user(store, uid, dict) {
+    async post_user(store, dict) {
       console.log(dict);
       return await api
-        .post(apiRoot + "/postuser/" + uid + "/", dict)
+        .post(apiRoot + "/postuser/", dict)
         .then((response) => store.commit("POST_USER", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
