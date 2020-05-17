@@ -34,16 +34,23 @@ database = firebase.database()
 
 class UserGetView(APIView):
     def get(self, request, format=None, id=None):
-        users = database.child("Users").child(id).get()
-        print(users.val())
+        try:
+            users = database.child("Users").child(id).get()
+        except DatabaseError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(users.val(), status=status.HTTP_200_OK)
 
-
 #-----------Registo--------------------#
+
+
 class UserPostView(APIView):
     def post(self, request, format=None, id=None):
         data = request.data
-        database.child("Users").child(id).update(data)
+        try:
+
+            database.child("Users").child(id).update(data)
+        except DatabaseError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
 
 

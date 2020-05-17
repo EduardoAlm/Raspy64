@@ -11,6 +11,13 @@ class userSerializer(serializers.Serializer):
     Username = serializers.CharField(required=True)
     Raspadinha = serializers.CharField(required=True)
 
+    def update(self, instance, validated_data):
+        """
+        Override
+        """
+        print("This is an update.")
+        pass
+
     def validate(self, attrs):
         """
         Validate the model attributes
@@ -23,6 +30,6 @@ class userSerializer(serializers.Serializer):
         """
         Create the model object
         """
-        newuser = Users(**validated_data)
-        newuser.save()
-        return newuser
+        user = Users(**validated_data)
+        user.save()
+        return user
