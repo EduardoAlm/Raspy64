@@ -9,7 +9,7 @@ from .models import Users
 class userSerializer(serializers.Serializer):
     Telemovel = serializers.CharField(required=True)
     Username = serializers.CharField(required=True)
-    Raspadinha = serializers.ICharField(required=True)
+    Raspadinha = serializers.CharField(required=True)
 
     def validate(self, attrs):
         """

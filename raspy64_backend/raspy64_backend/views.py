@@ -42,8 +42,8 @@ class UserGetView(APIView):
 #-----------Registo--------------------#
 class UserPostView(APIView):
     def post(self, request, format=None, id=None):
-        serializer = userSerializer(data=request.data)
-        database.child("Users").child(id).update(serializer)
+        data = request.data
+        database.child("Users").child(id).update(data)
         return Response(status=status.HTTP_200_OK)
 
 
