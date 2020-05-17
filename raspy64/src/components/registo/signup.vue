@@ -93,7 +93,7 @@ export default {
       };
 
       this.$store.dispatch("signUpAction", user);
-      const uid = this.$store.state.user;
+      const uid = await this.$store.state.user;
 
       var dict = {
         [uid]: {

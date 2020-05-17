@@ -65,7 +65,6 @@ export default {
       (v) => /.+@.+/.test(v) || "E-mail must be valid",
     ],
     password: "",
-    phonenumber: "",
     passwordRules: [(v) => !!v || "Password is Required"],
     code: "",
     result: "",
@@ -74,11 +73,13 @@ export default {
   methods: {
     async validate() {
       if (this.$refs.form.validate()) {
-        const phone = this.$store.dispatch("get_userphone");
+        const uid = this.$store.dispatch("get_uid", this.email);
+        const phone = this.$store.dispatch("get_userphone", uid);
+
         const appVerifier = window.recaptchaVerifier;
         firebase
           .auth()
-          .signInWithPhoneNumber(this.phonenumber, appVerifier)
+          .signInWithPhoneNumber(phone, appVerifier)
           .then((response) => {
             // success
             this.success = true;
