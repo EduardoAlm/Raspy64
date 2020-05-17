@@ -40,6 +40,22 @@ class UserGetPhoneView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(users.val(), status=status.HTTP_200_OK)
 
+
+class UserGetUIDView(APIView):
+    def get(self, request, format=None, email=None):
+        try:
+            users = database.child("Users/").get()
+            for user in users.each():
+                aux = user.key()
+                temp = database.child("Users/").child(aux).child("Email").get()
+                if temp.val() == email:
+                    print(user.key())
+                    return Response(user.key(), status=status.HTTP_200_OK)
+        except DatabaseError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response("u dum dum", status=status.HTTP_400_BAD_REQUEST)
+
+
 #-----------Registo--------------------#
 
 

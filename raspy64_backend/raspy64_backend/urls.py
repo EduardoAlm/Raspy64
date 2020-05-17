@@ -22,14 +22,16 @@ from raspy64_backend import views
 
 from .views import (
 
-    UserGetView,
+    UserGetPhoneView,
     UserPostView,
+    UserGetUIDView,
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('getuserphone/<str:id>/',
-         UserGetView().as_view(), name='get_userphone'),
+         UserGetPhoneView().as_view(), name='get_userphone'),
     path('postuser/',
          UserPostView().as_view(), name='post_user'),
+    path('getuseruid/<str:email>/', UserGetUIDView.as_view(), name='get_useruid'),
 ]
