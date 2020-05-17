@@ -1,6 +1,10 @@
 <template>
   <v-app-bar color="orange accent-4" dense colapse-on-scroll>
-    <router-link v-for="routes in links" v-bind:key="routes.id" :to="`${routes.page}`">
+    <router-link
+      v-for="routes in links"
+      v-bind:key="routes.id"
+      :to="`${routes.page}`"
+    >
       <v-icon class="mx-2">home</v-icon>
     </router-link>
 
@@ -13,14 +17,16 @@
           v-for="routes in links1"
           v-bind:key="routes.id"
           :to="`${routes.page}`"
-        >{{ routes.title }}</router-link>
+          >{{ routes.title }}</router-link
+        >
       </v-btn>
       <v-btn class="mx-2">
         <router-link
           v-for="routes in links2"
           v-bind:key="routes.id"
           :to="`${routes.page}`"
-        >{{ routes.title }}</router-link>
+          >{{ routes.title }}</router-link
+        >
       </v-btn>
     </div>
     <div v-else>
@@ -31,9 +37,9 @@
       <v-btn class="mx-2" @click="logoutFromFirebase()">Log Out</v-btn>
     </div>
     <div>
-      <v-snackbar v-model="snackbar" :timeout="timeout">
+      <v-snackbar v-model="snackbar" :timeout="2000">
         <div v-if="checkrasp()">It's time to try ur luck!</div>
-        <div v-else>U still gotta wait more {{timer}} seconds...</div>
+        <div v-else>U still gotta wait more {{ timer }} seconds...</div>
         <v-btn color="blue" text @click="snackbar = false">Close</v-btn>
       </v-snackbar>
     </div>
@@ -52,29 +58,29 @@ export default {
         {
           id: 1,
           text: "Raspy64",
-          page: "/"
-        }
+          page: "/",
+        },
       ],
       links1: [
         {
           id: 2,
           title: "Log In",
-          page: "/login"
-        }
+          page: "/login",
+        },
       ],
       links2: [
         {
           id: 3,
           title: "Sign Up",
-          page: "/signup"
-        }
-      ]
+          page: "/signup",
+        },
+      ],
     };
   },
   computed: {
     userLogedIn() {
       return this.$store.getters.user;
-    }
+    },
   },
   methods: {
     logoutFromFirebase() {
@@ -82,7 +88,7 @@ export default {
     },
     checkrasp() {
       return false;
-    }
-  }
+    },
+  },
 };
 </script>
