@@ -5,7 +5,7 @@ import api from "../api/api";
 
 Vue.use(Vuex);
 
-const apiRoot = "http://localhost:8000";
+const apiRoot = "http://0.0.0.0:8000";
 
 export default new Vuex.Store({
   state: {
@@ -28,7 +28,7 @@ export default new Vuex.Store({
     setError(state, payload) {
       state.error = payload;
     },
-    GET_USER: function(state, response) {
+    GET_USERPHONE: function(state, response) {
       console.log(state.userinfo);
       state.userinfo = response.body;
     },
@@ -38,16 +38,16 @@ export default new Vuex.Store({
     // Note that we added one more for logging out errors.
     API_FAIL: function(state, error) {
       console.error(error);
-      if (error.url == "http://127.0.0.1:8000/") {
+      if (error.url == "http://0.0.0.0:8000/") {
         state.apierror = error;
       }
     },
   },
   actions: {
-    async get_user(store, uid) {
+    async get_userphone(store, uid) {
       return await api
-        .get(apiRoot + "/getuser/" + uid + "/")
-        .then((response) => store.commit("GET_USER", response))
+        .get(apiRoot + "/getuserphone/" + uid + "/")
+        .then((response) => store.commit("GET_USERPHONE", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
     async post_user(store, dict) {

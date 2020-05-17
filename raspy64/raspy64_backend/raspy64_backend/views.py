@@ -32,7 +32,7 @@ database = firebase.database()
 #----------Login --------------------#
 
 
-class UserGetView(APIView):
+class UserGetPhoneView(APIView):
     def get(self, request, format=None, id=None):
         try:
             users = database.child("Users/").child(id).get()

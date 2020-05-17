@@ -100,6 +100,7 @@ export default {
           Telemovel: user.phonenumber,
           Username: user.username,
           Raspadinha: "0",
+          Email: user.email,
         },
       };
       console.log(await this.$store.dispatch("post_user", dict));
