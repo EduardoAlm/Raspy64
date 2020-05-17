@@ -7,8 +7,6 @@ from .models import Users
 
 
 class userSerializer(serializers.Serializer):
-    Nome = serializers.CharField(required=True)
-    Email = serializers.CharField(required=True)
     Telemovel = serializers.IntegerField(required=True)
     Raspadinha = serializers.IntegerField(required=True)
 
