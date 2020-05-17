@@ -14,8 +14,8 @@ export default new Vuex.Store({
     status: null,
     error: null,
     apierror: null,
-    useruid: null,
-    userphone: null,
+    useruid: [],
+    userphone: [],
   },
   mutations: {
     setUser(state, payload) {
@@ -31,12 +31,10 @@ export default new Vuex.Store({
       state.error = payload;
     },
     GET_USERPHONE: function(state, response) {
-      console.log(state.userphone);
-      state.userinfo = response.body;
+      state.userphone = response.body;
     },
     GET_USERUID: function(state, response) {
-      console.log(state.useruid);
-      state.userinfo = response.body;
+      state.useruid = response.body;
     },
     POST_USER: function(state, response) {
       state.userinfo.push(response.body);
@@ -71,7 +69,7 @@ export default new Vuex.Store({
     },
     async signUpAction({ commit }, payload) {
       commit("setStatus", "loading");
-      firebase
+      await firebase
         .auth()
         .createUserWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
@@ -88,7 +86,7 @@ export default new Vuex.Store({
     },
     async signInAction({ commit }, payload) {
       console.log(this.$store.dispatch("get_user", this.state.user));
-      firebase
+      await firebase
         .auth()
         .signInWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
@@ -102,8 +100,8 @@ export default new Vuex.Store({
           commit("setStatus", "failure");
         });
     },
-    signOutAction({ commit }) {
-      firebase
+    async signOutAction({ commit }) {
+      await firebase
         .auth()
         .signOut()
         .then(() => {

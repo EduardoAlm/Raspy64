@@ -64,7 +64,7 @@ export default {
         this.registerWithFirebase();
       }
     },
-    registerWithFirebase() {
+    async registerWithFirebase() {
       const user = {
         email: this.email,
         password: this.password,
@@ -72,7 +72,7 @@ export default {
         username: this.username
       };
 
-      this.$store.dispatch("signUpAction", user);
+      await this.$store.dispatch("signUpAction", user);
 
       const uid = this.$store.state.user;
       console.log(uid);

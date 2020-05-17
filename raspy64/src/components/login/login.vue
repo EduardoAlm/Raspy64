@@ -60,14 +60,15 @@ export default {
   methods: {
     async validate() {
       if (this.$refs.form.validate()) {
-        const uid = this.$store.dispatch("get_useruid", this.email);
-        console.log(uid);
-        const phone = this.$store.dispatch("get_userphone", uid);
+        await this.$store.dispatch("get_useruid", this.email);
 
+        await this.$store.dispatch("get_userphone", this.$store.state.useruid);
+        const phone = this.$store.state.userphone;
+        console.log(this.$store.state.userphone);
         const appVerifier = window.recaptchaVerifier;
         firebase
           .auth()
-          .signInWithPhoneNumber("+351968460016", appVerifier)
+          .signInWithPhoneNumber(phone, appVerifier)
           .then(response => {
             // success
             this.success = true;
@@ -75,8 +76,8 @@ export default {
             this.result = response;
             window.response = response;
           })
-          .catch(() => {
-            // error
+          .catch(error => {
+            console.log(error);
           });
       }
     },
