@@ -35,7 +35,7 @@ database = firebase.database()
 class UserGetPhoneView(APIView):
     def get(self, request, format=None, id=None):
         try:
-            users = database.child("Users/").child(id).get()
+            users = database.child("Users/").child(id).child("Telemovel").get()
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(users.val(), status=status.HTTP_200_OK)
