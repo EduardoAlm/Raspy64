@@ -7,6 +7,7 @@ from .models import Users
 
 
 class userSerializer(serializers.Serializer):
+    UID = serializers.CharField(required=True)
     Telemovel = serializers.CharField(required=True)
     Username = serializers.CharField(required=True)
     Raspadinha = serializers.CharField(required=True)
