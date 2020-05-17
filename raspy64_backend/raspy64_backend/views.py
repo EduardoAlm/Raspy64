@@ -29,16 +29,21 @@ config = {
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 
+#----------Login --------------------#
+
 
 class UserGetView(APIView):
-    def get(self, request, format=None, email=None):
-        users = database.child("Users").get()
+    def get(self, request, format=None, id=None):
+        users = database.child("Users").child(id).get()
         print(users.val())
         return Response(users.val(), status=status.HTTP_200_OK)
 
 
+#-----------Registo--------------------#
 class UserPostView(APIView):
-    def post(self, request, format=None):
-        data = userSerializer(request.data)
-        database.child("Users").push(data)
+    def post(self, request, format=None, id=None, data=None):
+        database.child("Users").child(id).update(data)
         return Response(status=status.HTTP_200_OK)
+
+
+#----------Oblivious Transfer--------------#

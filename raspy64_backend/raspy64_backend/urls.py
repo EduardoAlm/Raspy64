@@ -28,8 +28,8 @@ from .views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('getuser/<str:email>/',
+    path('getuser/<str:id>/',
          UserGetView().as_view(), name='get_user'),
-    path('postuser/',
+    path('postuser/<str:id>/<str:data>/',
          UserPostView().as_view(), name='pos_tuser'),
 ]
