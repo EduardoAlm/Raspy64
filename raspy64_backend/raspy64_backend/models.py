@@ -2,5 +2,6 @@ from django.db import models
 
 
 class Users(models.Model):
-    Raspadinha = models.IntegerField(primary_key=False)
-    Telemovel = models.IntegerField(primary_key=False)
+    Telemovel = models.CharField(max_length=150)
+    Username = models.CharField(max_length=150)
+    Raspadinha = models.CharField(max_length=150)

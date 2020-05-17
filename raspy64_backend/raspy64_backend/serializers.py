@@ -7,8 +7,9 @@ from .models import Users
 
 
 class userSerializer(serializers.Serializer):
-    Telemovel = serializers.IntegerField(required=True)
-    Raspadinha = serializers.IntegerField(required=True)
+    Telemovel = serializers.CharField(required=True)
+    Username = serializers.CharField(required=True)
+    Raspadinha = serializers.ICharField(required=True)
 
     def validate(self, attrs):
         """
@@ -22,6 +23,6 @@ class userSerializer(serializers.Serializer):
         """
         Create the model object
         """
-        newuser = User(**validated_data)
+        newuser = Users(**validated_data)
         newuser.save()
         return newuser
