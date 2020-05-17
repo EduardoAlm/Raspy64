@@ -96,7 +96,7 @@ export default {
 
       dict["Telemovel"] = user.phonenumber;
       dict["Username"] = user.username;
-      dict["Raspadinha"] = 0;
+      dict["Raspadinha"] = "0";
       const uid = this.$store.state.user;
       console.log(await this.$store.dispatch("post_user", uid, dict));
     },
