@@ -44,14 +44,12 @@ class UserGetView(APIView):
 
 
 class UserPostView(APIView):
-    def post(self, request, format=None):
+    def post(self, request, format=None, id=None):
         data = request.data
         try:
-
-            database.child("Users").update(data)
+            database.child("Users").child(id).update(data)
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
-
 
 #----------Oblivious Transfer--------------#

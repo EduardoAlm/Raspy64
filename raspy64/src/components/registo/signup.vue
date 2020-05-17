@@ -94,11 +94,12 @@ export default {
       this.$store.dispatch("signUpAction", user);
       const uid = this.$store.state.user;
       var dict = {};
-      (dict["uid"] = uid), (dict["Telemovel"] = user.phonenumber);
+      dict["uid"] = uid;
+      dict["Telemovel"] = user.phonenumber;
       dict["Username"] = user.username;
       dict["Raspadinha"] = "0";
 
-      console.log(await this.$store.dispatch("post_user", dict));
+      console.log(await this.$store.dispatch("post_user", uid, dict));
     },
     reset() {
       this.$refs.form.reset();
