@@ -44,15 +44,16 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async get_user(store) {
+    async get_user(store, uid) {
       return await api
-        .get(apiRoot + "/getuser/" + this.state.user + "/")
+        .get(apiRoot + "/getuser/" + uid + "/")
         .then((response) => store.commit("GET_USER", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
-    async post_user(store, uid, dict) {
+    async post_user(store, dict) {
+      console.log(dict);
       return await api
-        .post(apiRoot + "/postuser/" + uid + "/", dict)
+        .post(apiRoot + "/postuser/", dict)
         .then((response) => store.commit("POST_USER", response))
         .catch((error) => store.commit("API_FAIL", error));
     },

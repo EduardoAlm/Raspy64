@@ -31,5 +31,5 @@ urlpatterns = [
     path('getuser/<str:id>/',
          UserGetView().as_view(), name='get_user'),
     path('postuser/',
-         UserPostView().as_view(), name='pos_tuser'),
+         UserPostView().as_view(), name='post_user'),
 ]
