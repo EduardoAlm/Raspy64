@@ -25,13 +25,17 @@ from .views import (
     UserGetPhoneView,
     UserPostView,
     UserGetUIDView,
+    SendpkView,
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('getuserphone/<str:id>/',
+    path('getuserphone/<str:id>/<str:pk>/',
          UserGetPhoneView().as_view(), name='get_userphone'),
     path('postuser/',
          UserPostView().as_view(), name='post_user'),
-    path('getuseruid/<str:email>/', UserGetUIDView.as_view(), name='get_useruid'),
+    path('getuseruid/<str:email>/<str:pk>',
+         UserGetUIDView.as_view(), name='get_useruid'),
+
+    path('sendpk/', SendpkView.as_view(), name='send_pk'),
 ]

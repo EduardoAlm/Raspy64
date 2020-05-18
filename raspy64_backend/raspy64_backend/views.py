@@ -15,6 +15,11 @@ import datetime
 import time
 import pyrebase
 
+import Crypto
+from Crypto.PublicKey import RSA
+from Crypto import Random
+
+
 config = {
     'apiKey': "AIzaSyC-aDSTtVmZUJD6EsQQqRSwsARKeviP1ss",
     'authDomain': "raspy64-55ac5.firebaseapp.com",
@@ -29,28 +34,40 @@ config = {
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 
+random_generator = Random.new().read
+key = RSA.generate(1024, random_generator)
+pk = key.publickey().exportKey('DER')
+
+
+class SendpkView(APIView):
+    def get(self, request, format=None):
+        print(pk)
+        return Response(str(pk), status=status.HTTP_200_OK)
+
+
 #----------Login --------------------#
 
 
 class UserGetPhoneView(APIView):
-    def get(self, request, format=None, id=None):
+    def get(self, request, format=None, id=None, pk=None):
         try:
-            users = database.child("Users/").child(id).child("Telemovel").get()
+            users = database.child(
+                "Users/").child(key.decrypt(id)).child("Telemovel").get()
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(users.val(), status=status.HTTP_200_OK)
+        return Response(pk.encrypt(users.val()), status=status.HTTP_200_OK)
 
 
 class UserGetUIDView(APIView):
-    def get(self, request, format=None, email=None):
+    def get(self, request, format=None, email=None, pk=None):
         try:
             users = database.child("Users/").get()
             for user in users.each():
                 aux = user.key()
                 temp = database.child("Users/").child(aux).child("Email").get()
-                if temp.val() == email:
+                if temp.val() == key.decrypt(email):
                     print(user.key())
-                    return Response(user.key(), status=status.HTTP_200_OK)
+                    return Response(pk.encrypt(user.key()), status=status.HTTP_200_OK)
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response("u dum dum", status=status.HTTP_400_BAD_REQUEST)
@@ -63,7 +80,7 @@ class UserPostView(APIView):
     def post(self, request, format=None, id=None):
         data = request.data
         try:
-            database.child("Users/").update(data)
+            database.child("Users/").update(pk.encrypt(data))
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
