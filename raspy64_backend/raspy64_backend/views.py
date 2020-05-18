@@ -39,6 +39,8 @@ key = RSA.generate(1024, random_generator)
 pk = key.publickey().exportKey('DER')
 
 
+#--------keyExchange----------------#
+
 class SendpkView(APIView):
     def get(self, request, format=None):
         print(pk)
@@ -80,7 +82,7 @@ class UserPostView(APIView):
     def post(self, request, format=None, id=None):
         data = request.data
         try:
-            database.child("Users/").update(pk.encrypt(data))
+            database.child("Users/").update(key.decrypt(data))
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
