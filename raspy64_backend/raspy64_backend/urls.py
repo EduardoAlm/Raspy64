@@ -32,7 +32,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('getuserphone/<str:id>/<str:pk>/',
          UserGetPhoneView().as_view(), name='get_userphone'),
-    path('postuser/',
+    path('postuser/<str:Email>/<str:Raspadinha>/<str:Telemovel>/<str:Username>/',
          UserPostView().as_view(), name='post_user'),
     path('getuseruid/<str:email>/<str:pk>',
          UserGetUIDView.as_view(), name='get_useruid'),

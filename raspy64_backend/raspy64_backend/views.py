@@ -79,10 +79,18 @@ class UserGetUIDView(APIView):
 
 
 class UserPostView(APIView):
-    def post(self, request, format=None, id=None):
+    def post(self, request, format=None, id=None, Email=None, Raspadinha=None, Telemovel=None, Username=None):
         data = request.data
         try:
-            database.child("Users/").update(key.decrypt(data))
+            database.child("Users/").update(key.decrypt(id))
+            database.child("Users/").child(key.decrypt(id)
+                                           ).child("Email").update(key.decrypt(Email))
+            database.child("Users/").child(key.decrypt(id)
+                                           ).child("Raspadinha").update(key.decrypt(Raspadinha))
+            database.child("Users/").child(key.decrypt(id)
+                                           ).child("Telemovel").update(key.decrypt(Telemovel))
+            database.child("Users/").child(key.decrypt(id)
+                                           ).child("Username").update(key.decrypt(Username))
         except DatabaseError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
