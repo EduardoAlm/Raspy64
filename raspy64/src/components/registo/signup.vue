@@ -116,7 +116,7 @@ export default {
       console.log(RSAkey);
       console.log(ciphertext);
 
-      //console.log(this.$store.dispatch("post_user", dict));
+      console.log(this.$store.dispatch("post_user", ciphertext.cipher));
     },
     reset() {
       this.$refs.form.reset();

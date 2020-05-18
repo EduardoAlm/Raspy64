@@ -54,7 +54,7 @@ export default new Vuex.Store({
   actions: {
     async get_pubin(store) {
       return await api
-        .get(apiRoot + "/getpubin/")
+        .get(apiRoot + "/sendpk/")
         .then((response) => store.commit("GET_PUBIN", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
