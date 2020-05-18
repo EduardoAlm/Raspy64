@@ -16,6 +16,7 @@ export default new Vuex.Store({
     apierror: null,
     useruid: [],
     userphone: [],
+    backpub: [],
   },
   mutations: {
     setUser(state, payload) {
@@ -29,6 +30,9 @@ export default new Vuex.Store({
     },
     setError(state, payload) {
       state.error = payload;
+    },
+    GET_PUBIN: function(state, response) {
+      state.backpub = response.body;
     },
     GET_USERPHONE: function(state, response) {
       state.userphone = response.body;
@@ -48,6 +52,12 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    async get_pubin(store) {
+      return await api
+        .get(apiRoot + "/getpubin/")
+        .then((response) => store.commit("GET_PUBIN", response))
+        .catch((error) => store.commit("API_FAIL", error));
+    },
     async get_useruid(store, email) {
       return await api
         .get(apiRoot + "/getuseruid/" + email + "/")
