@@ -70,10 +70,22 @@ export default new Vuex.Store({
         .then((response) => store.commit("GET_USERPHONE", response))
         .catch((error) => store.commit("API_FAIL", error));
     },
-    async post_user(store, dict) {
-      console.log(dict);
+    async post_user(store, uid, username, rasp, email, phone) {
       return await api
-        .post(apiRoot + "/postuser/", dict)
+        .post(
+          apiRoot +
+            "/postuser/" +
+            btoa(uid) +
+            "/" +
+            btoa(email) +
+            "/" +
+            btoa(rasp) +
+            "/" +
+            btoa(phone) +
+            "/" +
+            btoa(username) +
+            "/"
+        )
         .then((response) => store.commit("POST_USER", response))
         .catch((error) => store.commit("API_FAIL", error));
     },

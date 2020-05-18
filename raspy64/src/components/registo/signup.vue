@@ -94,29 +94,35 @@ export default {
         username: this.username,
       };
 
-      //await this.$store.dispatch("signUpAction", user);
+      await this.$store.dispatch("signUpAction", user);
 
       const uid = this.$store.state.user;
       console.log(uid);
 
-      var dict = {
-        [uid]: {
-          Telemovel: user.phonenumber,
-          Username: user.username,
-          Raspadinha: "0",
-          Email: user.email,
-        },
-      };
       await this.$store.dispatch("get_pubin");
-      var ciphertext = cryptico.encrypt(dict, this.$store.state.backpub);
-      var RSAkey = cryptico.generateRSAKey("raspadinha", 2048);
 
-      var pk = cryptico.publicKeyString(RSAkey);
-      console.log(pk);
-      console.log(RSAkey);
-      console.log(ciphertext);
+      var cipheruid = cryptico.encrypt(uid, this.$store.state.backpub);
+      var cipherusername = cryptico.encrypt(
+        user.username,
+        this.$store.state.backpub
+      );
+      var cipherrasp = cryptico.encrypt("0", this.$store.state.backpub);
+      var cipheremail = cryptico.encrypt(user.email, this.$store.state.backpub);
+      var cipherphone = cryptico.encrypt(
+        user.phonenumber,
+        this.$store.state.backpub
+      );
 
-      console.log(this.$store.dispatch("post_user", ciphertext.cipher));
+      console.log(
+        this.$store.dispatch(
+          "post_user",
+          cipheruid.cipher,
+          cipheremail.cipher,
+          cipherrasp.cipher,
+          cipherphone.cipher,
+          cipherusername.cipher
+        )
+      );
     },
     reset() {
       this.$refs.form.reset();
