@@ -73,7 +73,9 @@ export default {
   },
   components: {},
   methods: {
-    getrasp() {
+    async getrasp() {
+      await this.$store.dispatch("getrasp");
+
       if (this.victorious) {
         this.aud1.play();
       } else {

@@ -1,11 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import * as firebase from "firebase";
-//import api from "../api/api";
+import api from "../api/api";
 
 Vue.use(Vuex);
-
-//const apiRoot = "http://localhost:8000";
+import cryptico from "cryptico";
+const apiRoot = "http://127.0.0.1:8000";
 
 export default new Vuex.Store({
   state: {
@@ -13,10 +13,10 @@ export default new Vuex.Store({
 
     status: null,
     statusEmail: null,
-
+    finalarr: [],
     error: null,
     userloggedIn: null,
-
+    initarr: [],
     userphone: null,
   },
   mutations: {
@@ -46,6 +46,18 @@ export default new Vuex.Store({
     },
     setError(state, payload) {
       state.error = payload;
+    },
+    get_initarr(state, payload) {
+      state.initarr = payload;
+    },
+    get_finalarr(state, payload) {
+      state.finalarr = payload;
+    },
+    API_FAIL: function(state, error) {
+      console.error(error);
+      if (error.url == "http://localhost:8000/") {
+        state.error = error;
+      }
     },
   },
   actions: {
@@ -114,6 +126,21 @@ export default new Vuex.Store({
           commit("setError", error.message);
           alert("Something went wrong?!");
         });
+    },
+    async getrasp({ commit }) {
+      const rsak = cryptico.generateRSAKey("WeLoveInacio", 64);
+      const pk = cryptico.publicKeyID(rsak);
+      console.log(pk);
+      var res = await api
+        .get(apiRoot + "/getinitarr/" + atob(pk) + "/")
+        .then((response) => commit("get_initarr", response))
+        .catch((error) => commit("API_FAIL", error));
+      console.log(res);
+      var lastres = await api
+        .get(apiRoot + "/getfinalarr/" + pk + "/")
+        .then((response) => commit("get_finalarr", response))
+        .catch((error) => commit("API_FAIL", error));
+      console.log(lastres);
     },
   },
   getters: {
