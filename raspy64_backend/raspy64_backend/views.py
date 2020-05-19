@@ -18,6 +18,7 @@ import pyrebase
 import Crypto
 from Crypto.PublicKey import RSA
 from Crypto import Random
+from numpy.random import choice
 
 
 config = {
@@ -34,17 +35,31 @@ config = {
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 
-random_generator = Random.new().read
+'''random_generator = Random.new().read
 key = RSA.generate(1024, random_generator)
-pk = key.publickey().exportKey('DER')
+pk = key.publickey().exportKey('DER')'''
 
 
 #--------keyExchange----------------#
 
-class SendpkView(APIView):
+'''class SendpkView(APIView):
     def get(self, request, format=None):
         print(pk)
-        return Response(str(pk), status=status.HTTP_200_OK)
+        return Response(str(pk), status=status.HTTP_200_OK)'''
+
+
+# ----------Oblivious Transfer--------
+
+class RandomReqView(APIView):
+    def get(self, request, format=None, pk=None):
+        draw = choice([0, 1], 10, [9/10, 1/10])
+        return Response(pk.encrypt(draw), status=status.HTTP_200_OK)
+
+
+class RealReqView(APIView):
+    def get(self, request, format=None, pk=None):
+        draw = choice([0, 1], 10, [9/10, 1/10])
+        return Response(pk.encrypt(draw), status=status.HTTP_200_OK)
 
 
 #----------Login --------------------#
