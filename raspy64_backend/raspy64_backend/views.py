@@ -18,6 +18,7 @@ import pyrebase
 import Crypto
 from Crypto.PublicKey import RSA
 from Crypto import Random
+import numpy as np
 from numpy.random import choice
 from simplecrypt import encrypt, decrypt
 
@@ -55,13 +56,16 @@ pk = bytes("tjAia9eqElIIZScEdfrbrIquh332B0ske1ffv3UN1FRQh0oS/GjuaIPls5eDy9EoUfIl
 
 class RandomReqView(APIView):
     def get(self, request, format=None):
-        draw = choice([0, 1], 10, [9/10, 1/10])
+        draw = np.random.randint(0, 2, 10)
         return Response(str(encrypt(pk, str(draw))), status=status.HTTP_200_OK)
 
 
 class RealReqView(APIView):
     def get(self, request, format=None):
-        draw = choice([0, 1], 10, [9/10, 1/10])
+        draw = []
+        weighted_random = [1] * 10 + [0] * 90
+        for i in range(0, 10):
+            draw.append(random.choice(weighted_random))
         return Response(str(encrypt(pk, str(draw))), status=status.HTTP_200_OK)
 
 
