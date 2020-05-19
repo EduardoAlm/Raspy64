@@ -1,26 +1,36 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import * as firebase from "firebase";
-import api from "../api/api";
+//import api from "../api/api";
 
 Vue.use(Vuex);
 
-const apiRoot = "http://localhost:8000";
+//const apiRoot = "http://localhost:8000";
 
 export default new Vuex.Store({
   state: {
     user: null,
-    userinfo: [],
+
     status: null,
+    statusEmail: null,
+
     error: null,
-    apierror: null,
-    useruid: [],
-    userphone: [],
-    backpub: [],
+    userloggedIn: null,
+
+    userphone: null,
   },
   mutations: {
     setUser(state, payload) {
       state.user = payload;
+    },
+    setUserPhone(state, payload) {
+      state.userphone = payload;
+    },
+    setUserLoggedIn(state, payload) {
+      state.userloggedIn = payload;
+    },
+    setSMSResult(state, payload) {
+      state.smsresult = payload;
     },
     removeUser(state) {
       state.user = null;
@@ -28,67 +38,17 @@ export default new Vuex.Store({
     setStatus(state, payload) {
       state.status = payload;
     },
+    setStatusSMS(state, payload) {
+      state.statusSMS = payload;
+    },
+    setStatusEmail(state, payload) {
+      state.statusEmail = payload;
+    },
     setError(state, payload) {
       state.error = payload;
     },
-    GET_PUBIN: function(state, response) {
-      state.backpub = response.body;
-    },
-    GET_USERPHONE: function(state, response) {
-      state.userphone = response.body;
-    },
-    GET_USERUID: function(state, response) {
-      state.useruid = response.body;
-    },
-    POST_USER: function(state, response) {
-      state.userinfo.push(response.body);
-    },
-    // Note that we added one more for logging out errors.
-    API_FAIL: function(state, error) {
-      console.error(error);
-      if (error.url == "http://localhost:8000/") {
-        state.apierror = error;
-      }
-    },
   },
   actions: {
-    async get_pubin(store) {
-      return await api
-        .get(apiRoot + "/sendpk/")
-        .then((response) => store.commit("GET_PUBIN", response))
-        .catch((error) => store.commit("API_FAIL", error));
-    },
-    async get_useruid(store, email) {
-      return await api
-        .get(apiRoot + "/getuseruid/" + email + "/")
-        .then((response) => store.commit("GET_USERUID", response))
-        .catch((error) => store.commit("API_FAIL", error));
-    },
-    async get_userphone(store, uid) {
-      return await api
-        .get(apiRoot + "/getuserphone/" + uid + "/")
-        .then((response) => store.commit("GET_USERPHONE", response))
-        .catch((error) => store.commit("API_FAIL", error));
-    },
-    async post_user(store, uid, username, rasp, email, phone) {
-      return await api
-        .post(
-          apiRoot +
-            "/postuser/" +
-            btoa(uid) +
-            "/" +
-            btoa(email) +
-            "/" +
-            btoa(rasp) +
-            "/" +
-            btoa(phone) +
-            "/" +
-            btoa(username) +
-            "/"
-        )
-        .then((response) => store.commit("POST_USER", response))
-        .catch((error) => store.commit("API_FAIL", error));
-    },
     async signUpAction({ commit }, payload) {
       commit("setStatus", "loading");
       await firebase
@@ -96,7 +56,6 @@ export default new Vuex.Store({
         .createUserWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
           alert("success");
-
           commit("setUser", response.user.uid);
           commit("setError", null);
           commit("setStatus", "success");
@@ -106,21 +65,38 @@ export default new Vuex.Store({
           commit("setStatus", "failure");
         });
     },
-    async signInAction({ commit }, payload) {
-      console.log(this.$store.dispatch("get_user", this.state.user));
-      await firebase
+    async writeUserData({ commit }, payload) {
+      firebase
+        .database()
+        .ref("Users/" + this.state.user)
+        .set({
+          username: payload.username,
+          raspadinha: payload.rasp,
+          email: payload.email,
+          phonenumber: payload.phone,
+        });
+      commit("setStatus", "success");
+    },
+
+    async signInActionEmail({ commit }, payload) {
+      //console.log(this.$store.dispatch("get_user", this.state.user));
+      return await firebase
         .auth()
         .signInWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
           commit("setUser", response.user.uid);
-          commit("setError", null);
           commit("setStatus", "success");
-          return true;
+          commit("setError", null);
+          commit("setStatusEmail", "success");
+          console.log("success");
         })
         .catch((error) => {
           commit("setError", error.message);
           commit("setStatus", "failure");
         });
+    },
+    updateloggedIn({ commit }) {
+      commit("setUserLoggedIn", "success");
     },
     async signOutAction({ commit }) {
       await firebase
@@ -130,10 +106,13 @@ export default new Vuex.Store({
           commit("setUser", null);
           commit("setStatus", "success");
           commit("setError", null);
+          commit("setUserLoggedIn", null);
+          alert("Bye");
         })
         .catch((error) => {
           commit("setStatus", "failure");
           commit("setError", error.message);
+          alert("Something went wrong?!");
         });
     },
   },
@@ -141,8 +120,8 @@ export default new Vuex.Store({
     status(state) {
       return state.status;
     },
-    user(state) {
-      return state.user;
+    userloggedIn(state) {
+      return state.userloggedIn;
     },
     error(state) {
       return state.error;

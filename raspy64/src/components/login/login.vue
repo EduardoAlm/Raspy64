@@ -31,7 +31,7 @@
           <v-text-field v-model="code" label="Verification Code" required />
         </div>
         <div v-if="success">
-          <v-btn class="mx-2" color="success" @click="loginWithFirebase">Log In</v-btn>
+          <v-btn class="mx-2" color="success" @click="finalCode(code)">Log In</v-btn>
         </div>
       </v-form>
     </div>
@@ -41,6 +41,7 @@
 
 <script>
 import * as firebase from "firebase";
+import cryptico from "cryptico";
 export default {
   data: () => ({
     passwordShow: false,
@@ -55,60 +56,79 @@ export default {
     passwordRules: [v => !!v || "Password is Required"],
     code: "",
     result: "",
-    login: true
+    login: false
   }),
   methods: {
+    async loginWithFirebase(user) {
+      await this.$store.dispatch("signInActionEmail", user);
+      if (this.$store.state.statusEmail == "success") {
+        const appVerifier = window.recaptchaVerifier;
+        this.smssignin(appVerifier);
+      }
+    },
+    async smssignin(appVerifier) {
+      var phonenumber = "";
+      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 2048);
+      await firebase
+        .database()
+        .ref("/Users/" + this.$store.state.user)
+        .once("value")
+        .then(function(snapshot) {
+          phonenumber =
+            cryptico.decrypt(
+              snapshot.val() && snapshot.val().phonenumber,
+              RSAkeys
+            ).plaintext || "Anonymous";
+        });
+
+      await firebase
+        .auth()
+        .signInWithPhoneNumber(phonenumber, appVerifier)
+        .then(response => {
+          // success
+          this.success = true;
+          window.response = response;
+          this.result = response;
+          alert("success");
+        })
+        .catch(() => {
+          alert("Failure");
+        });
+    },
+    async finalCode() {
+      var code = this.code;
+      var login = false;
+      await this.result
+        .confirm(code)
+        .then(function() {
+          // User signed in successfully.
+          //var user = result.user;
+          login = "true";
+          alert("success");
+
+          // ...
+        })
+        .catch(function() {
+          // User couldn't sign in (bad verification code?)
+          // ...
+          alert("failure");
+        });
+
+      if (login == "true") {
+        this.$store.dispatch("updateloggedIn");
+      }
+    },
     async validate() {
       if (this.$refs.form.validate()) {
-        await this.$store.dispatch("get_useruid", this.email);
-
-        await this.$store.dispatch("get_userphone", this.$store.state.useruid);
-        const phone = this.$store.state.userphone;
-        console.log(this.$store.state.userphone);
-        const appVerifier = window.recaptchaVerifier;
-        firebase
-          .auth()
-          .signInWithPhoneNumber(phone, appVerifier)
-          .then(response => {
-            // success
-            this.success = true;
-            console.log("success", response);
-            this.result = response;
-            window.response = response;
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        const user = {
+          email: this.email,
+          password: this.password
+        };
+        this.loginWithFirebase(user);
       }
     },
     reset() {
       this.$refs.form.reset();
-    },
-    loginWithFirebase() {
-      const user = {
-        email: this.email,
-        password: this.password
-      };
-
-      this.result
-        .confirm(this.code)
-        .then(function(result) {
-          // User signed in successfully.
-          //var user = result.user;
-
-          console.log(result);
-
-          // ...
-        })
-        .catch(function(error) {
-          // User couldn't sign in (bad verification code?)
-          // ...
-          this.login = false;
-          console.log(error);
-        });
-      if (this.login) {
-        this.$store.dispatch("signInAction", user);
-      }
     }
   },
   mounted() {

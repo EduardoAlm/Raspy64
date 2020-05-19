@@ -3,24 +3,10 @@
     <v-layout row wrap>
       <v-flex>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field
-            v-model="username"
-            label="User Name"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
-            required
-          ></v-text-field>
+          <v-text-field v-model="username" label="User Name" required></v-text-field>
+          <v-text-field v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
 
-          <v-text-field
-            v-model="phonenumber"
-            :rules="phoneRules"
-            label="Phone Number"
-            required
-          ></v-text-field>
+          <v-text-field v-model="phonenumber" :rules="phoneRules" label="Phone Number" required></v-text-field>
 
           <v-text-field
             v-model="password"
@@ -42,13 +28,7 @@
             @click:append="confirmPasswordShow = !confirmPasswordShow"
           ></v-text-field>
 
-          <v-btn
-            :disabled="!valid"
-            class="mx-2"
-            color="success"
-            @click="validate"
-            >Register</v-btn
-          >
+          <v-btn :disabled="!valid" class="mx-2" color="success" @click="validate">Register</v-btn>
 
           <v-btn color="error" class="mx-2" @click="reset">Reset Fields</v-btn>
         </v-form>
@@ -69,16 +49,16 @@ export default {
     phonenumber: "",
     email: "",
     phoneRules: [
-      (v) => !!v || "Phone Number is required",
-      (v) => /.+351.+/.test(v) || "Phone number must be valid (+351 ...)",
+      v => !!v || "Phone Number is required",
+      v => /.+351.+/.test(v) || "Phone number must be valid (+351 ...)"
     ],
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+/.test(v) || "E-mail must be valid",
+      v => !!v || "E-mail is required",
+      v => /.+@.+/.test(v) || "E-mail must be valid"
     ],
     password: "",
     confirmPassword: "",
-    passwordRules: [(v) => !!v || "Password and Confirm password Required"],
+    passwordRules: [v => !!v || "Password and Confirm password Required"]
   }),
   methods: {
     validate() {
@@ -87,46 +67,33 @@ export default {
       }
     },
     async registerWithFirebase() {
+      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 2048);
+      const pk = cryptico.publicKeyString(RSAkeys);
       const user = {
         email: this.email,
         password: this.password,
         phonenumber: this.phonenumber,
-        username: this.username,
+        username: this.username
       };
 
       await this.$store.dispatch("signUpAction", user);
 
-      const uid = this.$store.state.user;
-      console.log(uid);
-
-      await this.$store.dispatch("get_pubin");
-
-      var cipheruid = cryptico.encrypt(uid, this.$store.state.backpub);
-      var cipherusername = cryptico.encrypt(
-        user.username,
-        this.$store.state.backpub
-      );
-      var cipherrasp = cryptico.encrypt("0", this.$store.state.backpub);
-      var cipheremail = cryptico.encrypt(user.email, this.$store.state.backpub);
-      var cipherphone = cryptico.encrypt(
-        user.phonenumber,
-        this.$store.state.backpub
-      );
-
-      console.log(
-        this.$store.dispatch(
-          "post_user",
-          cipheruid.cipher,
-          cipheremail.cipher,
-          cipherrasp.cipher,
-          cipherphone.cipher,
-          cipherusername.cipher
-        )
-      );
+      var cipherusername = cryptico.encrypt(user.username, pk);
+      var cipherrasp = cryptico.encrypt("0", pk);
+      var cipheremail = cryptico.encrypt(user.email, pk);
+      var cipherphone = cryptico.encrypt(user.phonenumber, pk);
+      const regist = {
+        email: cipheremail.cipher,
+        rasp: cipherrasp.cipher,
+        phone: cipherphone.cipher,
+        username: cipherusername.cipher
+      };
+      if (this.$store.state.status == "success")
+        await this.$store.dispatch("writeUserData", regist);
     },
     reset() {
       this.$refs.form.reset();
-    },
-  },
+    }
+  }
 };
 </script>
