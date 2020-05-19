@@ -22,9 +22,9 @@ from raspy64_backend import views
 
 from .views import (
 
-    UserGetPhoneView,
-    UserPostView,
-    UserGetUIDView,
+    # UserGetPhoneView,
+    # UserPostView,
+    # UserGetUIDView,
     # SendpkView,
     RandomReqView,
     RealReqView,
@@ -32,16 +32,17 @@ from .views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('getuserphone/<str:id>/<str:pk>/',
+
+
+    #path('sendpk/', SendpkView.as_view(), name='send_pk'),
+
+    path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
+
+    path('getfinalarr/', RealReqView.as_view(), name='getfinalarr'),
+]
+'''path('getuserphone/<str:id>/<str:pk>/',
          UserGetPhoneView().as_view(), name='get_userphone'),
     path('postuser/<str:id>/<str:Email>/<str:Raspadinha>/<str:Telemovel>/<str:Username>/',
          UserPostView().as_view(), name='post_user'),
     path('getuseruid/<str:email>/<str:pk>',
-         UserGetUIDView.as_view(), name='get_useruid'),
-
-    #path('sendpk/', SendpkView.as_view(), name='send_pk'),
-
-    path('getinitarr/<str:pk>', RandomReqView.as_view(), name='getinitarr'),
-
-    path('getfinalarr/<str:pk>', RandomReqView.as_view(), name='getfinalarr'),
-]
+         UserGetUIDView.as_view(), name='get_useruid'),'''

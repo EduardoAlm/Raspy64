@@ -19,6 +19,7 @@ import Crypto
 from Crypto.PublicKey import RSA
 from Crypto import Random
 from numpy.random import choice
+from simplecrypt import encrypt, decrypt
 
 
 config = {
@@ -40,6 +41,8 @@ key = RSA.generate(1024, random_generator)
 pk = key.publickey().exportKey('DER')'''
 
 
+pk = bytes("tjAia9eqElIIZScEdfrbrIquh332B0ske1ffv3UN1FRQh0oS/GjuaIPls5eDy9EoUfIlhGqrkcYX1s39XOgw9X/rqP4hmtU8ymm0fJ0wpQ6qIjrN+gvQBNoQk6cWgoSzItg+fhGqECBoNUHzyswXFkVXX1h1S0eIRz9r6nHc87k=", 'utf-8')
+
 #--------keyExchange----------------#
 
 '''class SendpkView(APIView):
@@ -51,17 +54,18 @@ pk = key.publickey().exportKey('DER')'''
 # ----------Oblivious Transfer--------
 
 class RandomReqView(APIView):
-    def get(self, request, format=None, pk=None):
+    def get(self, request, format=None):
         draw = choice([0, 1], 10, [9/10, 1/10])
-        return Response(pk.encrypt(draw), status=status.HTTP_200_OK)
+        return Response(str(encrypt(pk, str(draw))), status=status.HTTP_200_OK)
 
 
 class RealReqView(APIView):
-    def get(self, request, format=None, pk=None):
+    def get(self, request, format=None):
         draw = choice([0, 1], 10, [9/10, 1/10])
-        return Response(pk.encrypt(draw), status=status.HTTP_200_OK)
+        return Response(str(encrypt(pk, str(draw))), status=status.HTTP_200_OK)
 
 
+'''
 #----------Login --------------------#
 
 
@@ -112,3 +116,4 @@ class UserPostView(APIView):
 
 
 #----------Oblivious Transfer--------------#
+'''
