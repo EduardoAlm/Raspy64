@@ -26,7 +26,7 @@ from .views import (
     # UserPostView,
     # UserGetUIDView,
     # SendpkView,
-    RandomReqView,
+    # RandomReqView,
     RealReqView,
 )
 
@@ -36,7 +36,7 @@ urlpatterns = [
 
     #path('sendpk/', SendpkView.as_view(), name='send_pk'),
 
-    path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
+    #path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
 
     path('getfinalarr/', RealReqView.as_view(), name='getfinalarr'),
 ]

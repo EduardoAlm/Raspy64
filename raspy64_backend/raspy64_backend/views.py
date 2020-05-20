@@ -40,12 +40,6 @@ firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 
 
-class RandomReqView(APIView):
-    def get(self, request, format=None):
-        draw = np.random.randint(0, 2, 10)
-        return Response(str(encrypt(pk, str(draw))), status=status.HTTP_200_OK)
-
-
 class RealReqView(APIView):
     def get(self, request, format=None):
         draw = []
@@ -57,12 +51,12 @@ class RealReqView(APIView):
 
         h = hmac.new(bytes("OneLoveInacio", 'utf-8'),
                      res2, hashlib.sha256)
-        print(h.hexdigest())
+        print(h.digest())
 
         # print(res2)
 
         result = {
-            'hmac': h.hexdigest(),
+            'hmac': base64.b64encode(h.digest()).decode(),
             'msg': res2
         }
 
