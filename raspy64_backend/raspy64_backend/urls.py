@@ -32,7 +32,6 @@ from .views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-<<<<<<< Updated upstream
 
 
     #path('sendpk/', SendpkView.as_view(), name='send_pk'),
@@ -40,20 +39,6 @@ urlpatterns = [
     path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
 
     path('getfinalarr/', RealReqView.as_view(), name='getfinalarr'),
-=======
-    path('getuserphone/<str:id>/<str:pk>/',
-         UserGetPhoneView().as_view(), name='get_userphone'),
-    path('postuser/<str:id>/<str:Email>/<str:Raspadinha>/<str:Telemovel>/<str:Username>/',
-         UserPostView().as_view(), name='post_user'),
-    path('getuseruid/<str:email>/<str:pk>/',
-         UserGetUIDView.as_view(), name='get_useruid'),
-
-    #path('sendpk/', SendpkView.as_view(), name='send_pk'),
-
-    path('getinitarr/<str:pk>/', RandomReqView.as_view(), name='getinitarr'),
-
-    path('getfinalarr/<str:pk>/', RandomReqView.as_view(), name='getfinalarr'),
->>>>>>> Stashed changes
 ]
 '''path('getuserphone/<str:id>/<str:pk>/',
          UserGetPhoneView().as_view(), name='get_userphone'),
