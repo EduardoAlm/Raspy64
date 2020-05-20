@@ -22,6 +22,8 @@ import numpy as np
 from numpy.random import choice
 from simplecrypt import encrypt, decrypt
 import base64
+import hmac
+import hashlib
 
 config = {
     'apiKey': "AIzaSyC-aDSTtVmZUJD6EsQQqRSwsARKeviP1ss",
@@ -51,7 +53,17 @@ class RealReqView(APIView):
         for i in range(0, 10):
             draw.append(choice(weighted_random))
 
-        res2 = base64.b64encode((bytes(str(draw), 'utf-8'))).decode("utf-8")
-        print(res2)
+        res2 = base64.b64encode((bytes(str(draw), 'utf-8')))
 
-        return Response(res2, status=status.HTTP_200_OK)
+        h = hmac.new(bytes("OneLoveInacio", 'utf-8'),
+                     res2, hashlib.sha256)
+        print(h.hexdigest())
+
+        # print(res2)
+
+        result = {
+            'hmac': h.hexdigest(),
+            'msg': res2
+        }
+
+        return Response(result, status=status.HTTP_200_OK)
