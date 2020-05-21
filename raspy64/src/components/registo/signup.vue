@@ -67,7 +67,7 @@ export default {
       }
     },
     async registerWithFirebase() {
-      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 2048);
+      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 1024);
       const pk = cryptico.publicKeyString(RSAkeys);
       const user = {
         email: this.email,
@@ -80,11 +80,13 @@ export default {
 
       var cipherusername = cryptico.encrypt(user.username, pk);
       var cipherrasp = cryptico.encrypt("0", pk);
+      var cipherrasptimer = cryptico.encrypt("0", pk);
       var cipheremail = cryptico.encrypt(user.email, pk);
       var cipherphone = cryptico.encrypt(user.phonenumber, pk);
       const regist = {
         email: cipheremail.cipher,
         rasp: cipherrasp.cipher,
+        rasptimer: cipherrasptimer.cipher,
         phone: cipherphone.cipher,
         username: cipherusername.cipher
       };

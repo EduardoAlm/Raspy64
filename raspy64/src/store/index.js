@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import * as firebase from "firebase";
 import api from "../api/api";
-//import cryptojs from "crypto-js";
+import cryptojs from "crypto-js";
 
 Vue.use(Vuex);
 //import cryptico from "cryptico";
@@ -11,16 +11,19 @@ const apiRoot = "http://localhost:8000";
 export default new Vuex.Store({
   state: {
     user: null,
-
+    timeleft: 0,
     status: null,
     statusEmail: null,
     finalarr: [],
     error: null,
     userloggedIn: null,
-
+    usertimer: 0,
     userphone: null,
   },
   mutations: {
+    setTimeLeft(state, payload) {
+      state.timeleft = payload;
+    },
     setUser(state, payload) {
       state.user = payload;
     },
@@ -29,6 +32,9 @@ export default new Vuex.Store({
     },
     setUserLoggedIn(state, payload) {
       state.userloggedIn = payload;
+    },
+    setTimer(state, payload) {
+      state.usertimer = payload;
     },
     setSMSResult(state, payload) {
       state.smsresult = payload;
@@ -60,6 +66,16 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    async setTimer({ commit }, payload) {
+      console.log(payload);
+      commit("setTimer", payload);
+    },
+    async timeleft({ commit }) {
+      var d = new Date();
+      var rntimer = d.getHours() * 60 + d.getMinutes();
+      var timer = rntimer - this.state.usertimer;
+      commit("setTimeLeft", 60 - timer);
+    },
     async signUpAction({ commit }, payload) {
       commit("setStatus", "loading");
       await firebase
@@ -69,11 +85,11 @@ export default new Vuex.Store({
           alert("success");
           commit("setUser", response.user.uid);
           commit("setError", null);
-          commit("setStatus", "success");
+          commit("setStatus", "success on resgistration");
         })
         .catch((error) => {
           commit("setError", error.message);
-          commit("setStatus", "failure");
+          commit("setStatus", "failure on resgistration");
         });
     },
     async writeUserData({ commit }, payload) {
@@ -83,6 +99,7 @@ export default new Vuex.Store({
         .set({
           username: payload.username,
           raspadinha: payload.rasp,
+          timerraspadinha: payload.rasptimer,
           email: payload.email,
           phonenumber: payload.phone,
         });
@@ -99,11 +116,12 @@ export default new Vuex.Store({
           commit("setStatus", "success");
           commit("setError", null);
           commit("setStatusEmail", "success");
-          console.log("success");
+          alert("success on email");
         })
         .catch((error) => {
           commit("setError", error.message);
           commit("setStatus", "failure");
+          alert("failure on email");
         });
     },
     updateloggedIn({ commit }) {
@@ -132,16 +150,26 @@ export default new Vuex.Store({
         .then((response) => commit("get_finalarr", response))
         .catch((error) => commit("API_FAIL", error));
 
-      console.log(this.state.finalarr.body);
-      const rr = atob(this.state.finalarr.body);
+      const obj = JSON.parse(JSON.stringify(this.state.finalarr));
 
-      const array = JSON.parse(rr);
-      console.log(array);
-      const n = Math.floor(Math.random() * 9 + 0);
-      console.log(n);
-      console.log(array[n]);
-      if (array[n] == 1) {
-        return true;
+      const hmac = obj.body["hmac"];
+
+      const hash = cryptojs.HmacSHA256(
+        obj.body["msg"],
+        "OneLoveInacio".toString("ascii")
+      );
+      const hashInBase64 = cryptojs.enc.Base64.stringify(hash);
+      console.log(hmac);
+      console.log(hashInBase64);
+      if (hmac == hashInBase64) {
+        const n = Math.floor(Math.random() * 9 + 0);
+        console.log(n);
+        const array = JSON.parse(atob(obj.body["msg"]));
+        console.log(array);
+        console.log(array[n]);
+        if (array[n] == 1) {
+          return true;
+        } else return false;
       } else return false;
     },
   },

@@ -24,7 +24,7 @@
       </v-btn>
     </div>
     <div v-else>
-      <v-btn class="mx-2" dark color="orange darken-2" @click="snackbar = true">
+      <v-btn class="mx-2" dark color="orange darken-2" @click="snackbar = true;checkrasp()">
         <v-icon>notifications_active</v-icon>
       </v-btn>
 
@@ -32,8 +32,8 @@
     </div>
     <div>
       <v-snackbar v-model="snackbar" :timeout="2000">
-        <div v-if="checkrasp()">It's time to try ur luck!</div>
-        <div v-else>U still gotta wait more {{ timer }} seconds...</div>
+        <div v-if="isAvail">It's time to try ur luck!</div>
+        <div v-else>U still gotta wait {{ timer }} minutes.</div>
         <v-btn color="blue" text @click="snackbar = false">Close</v-btn>
       </v-snackbar>
     </div>
@@ -47,7 +47,8 @@ export default {
     return {
       text: "It's time to try your luck!",
       snackbar: false,
-      timer: "122",
+      timer: this.$store.state.timeleft,
+      isAvail: false,
       links: [
         {
           id: 1,
@@ -80,8 +81,14 @@ export default {
     logoutFromFirebase() {
       this.$store.dispatch("signOutAction");
     },
-    checkrasp() {
-      return false;
+    async checkrasp() {
+      await this.$store.dispatch("timeleft");
+      if (this.$store.state.timeleft > 0) {
+        this.timer = this.$store.state.timeleft;
+        this.isAvail = false;
+      } else {
+        this.isAvail = true;
+      }
     }
   }
 };

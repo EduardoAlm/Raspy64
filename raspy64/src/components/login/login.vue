@@ -68,7 +68,7 @@ export default {
     },
     async smssignin(appVerifier) {
       var phonenumber = "";
-      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 2048);
+      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 1024);
       await firebase
         .database()
         .ref("/Users/" + this.$store.state.user)
@@ -89,10 +89,10 @@ export default {
           this.success = true;
           window.response = response;
           this.result = response;
-          alert("success");
+          alert("success on phone number");
         })
         .catch(() => {
-          alert("Failure");
+          alert("failure on phone number");
         });
     },
     async finalCode() {
@@ -104,18 +104,32 @@ export default {
           // User signed in successfully.
           //var user = result.user;
           login = "true";
-          alert("success");
 
           // ...
         })
         .catch(function() {
           // User couldn't sign in (bad verification code?)
           // ...
-          alert("failure");
         });
 
       if (login == "true") {
+        var d = new Date();
+        console.log(
+          d.getHours() +
+            ":" +
+            d.getMinutes() +
+            "=" +
+            (d.getHours() * 60 + d.getMinutes())
+        );
+        await this.$store.dispatch(
+          "setTimer",
+          d.getHours() * 60 + d.getMinutes()
+        );
+        console.log(this.$store.state.usertimer);
+        alert("success on code verification");
         this.$store.dispatch("updateloggedIn");
+      } else {
+        alert("failure on code verification");
       }
     },
     async validate() {
