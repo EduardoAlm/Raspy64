@@ -3,9 +3,10 @@ import Vuex from "vuex";
 import * as firebase from "firebase";
 import api from "../api/api";
 import cryptojs from "crypto-js";
+import cryptico from "cryptico";
 
 Vue.use(Vuex);
-//import cryptico from "cryptico";
+
 const apiRoot = "http://localhost:8000";
 
 export default new Vuex.Store({
@@ -85,15 +86,16 @@ export default new Vuex.Store({
           alert("success");
           commit("setUser", response.user.uid);
           commit("setError", null);
-          commit("setStatus", "success on resgistration");
+          commit("setStatus", "success");
         })
         .catch((error) => {
+          alert(error.message);
           commit("setError", error.message);
-          commit("setStatus", "failure on resgistration");
+          commit("setStatus", "failure");
         });
     },
     async writeUserData({ commit }, payload) {
-      firebase
+      await firebase
         .database()
         .ref("Users/" + this.state.user)
         .set({
@@ -112,6 +114,7 @@ export default new Vuex.Store({
         .auth()
         .signInWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
+          console.log(response.user.uid);
           commit("setUser", response.user.uid);
           commit("setStatus", "success");
           commit("setError", null);
@@ -128,6 +131,31 @@ export default new Vuex.Store({
       commit("setUserLoggedIn", "success");
     },
     async signOutAction({ commit }) {
+      const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 1024);
+      const pk = cryptico.publicKeyString(RSAkeys);
+      console.log("time left" + this.state.timeleft);
+      if (this.state.timeleft <= 0) {
+        await firebase
+          .database()
+          .ref("Users/" + this.state.user)
+          .update({
+            raspadinha: cryptico.encrypt(1, pk).cipher,
+            timerraspadinha: 0,
+          });
+        commit("setStatus", "success");
+        alert("You have one try saved");
+      } else {
+        await firebase
+          .database()
+          .ref("Users/" + this.state.user)
+          .update({
+            raspadinha: cryptico.encrypt(0, pk).cipher,
+            timerraspadinha: 60 - this.state.timeleft,
+          });
+        commit("setStatus", "success");
+        alert("Timer Updated");
+      }
+
       await firebase
         .auth()
         .signOut()
@@ -136,7 +164,7 @@ export default new Vuex.Store({
           commit("setStatus", "success");
           commit("setError", null);
           commit("setUserLoggedIn", null);
-          alert("Bye");
+          alert("Bye, see you next time!");
         })
         .catch((error) => {
           commit("setStatus", "failure");

@@ -44,6 +44,13 @@ import * as firebase from "firebase";
 import cryptico from "cryptico";
 export default {
   data: () => ({
+    links1: [
+      {
+        id: 1,
+        text: "Raspy64",
+        page: "/"
+      }
+    ],
     passwordShow: false,
     valid: true,
     email: "",
@@ -104,30 +111,57 @@ export default {
           // User signed in successfully.
           //var user = result.user;
           login = "true";
+          alert("success on code");
 
           // ...
         })
         .catch(function() {
-          // User couldn't sign in (bad verification code?)
+          alert("bad verification code?");
           // ...
         });
 
       if (login == "true") {
         var d = new Date();
-        console.log(
-          d.getHours() +
-            ":" +
-            d.getMinutes() +
-            "=" +
-            (d.getHours() * 60 + d.getMinutes())
-        );
-        await this.$store.dispatch(
-          "setTimer",
-          d.getHours() * 60 + d.getMinutes()
-        );
-        console.log(this.$store.state.usertimer);
-        alert("success on code verification");
-        this.$store.dispatch("updateloggedIn");
+        //const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 1024);
+        var userId = firebase.auth().currentUser.uid;
+        var rasptimer;
+        await firebase
+          .database()
+          .ref("/Users/" + userId)
+          .once("value")
+          .then(function(snapshot) {
+            rasptimer =
+              (snapshot.val() && snapshot.val().timerraspadinha) || "Anonymous";
+            // ...
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+
+        console.log(rasptimer);
+        if (rasptimer == 0) {
+          console.log(
+            d.getHours() +
+              ":" +
+              d.getMinutes() +
+              "=" +
+              (d.getHours() * 60 + d.getMinutes())
+          );
+          await this.$store.dispatch(
+            "setTimer",
+            d.getHours() * 60 + d.getMinutes()
+          );
+          console.log(this.$store.state.usertimer);
+          alert("success on code verification");
+          await this.$store.dispatch("updateloggedIn");
+        } else {
+          await this.$store.dispatch(
+            "setTimer",
+            d.getHours() * 60 + d.getMinutes() - rasptimer
+          );
+          await this.$store.dispatch("updateloggedIn");
+          console.log(this.$store.state.usertimer);
+        }
       } else {
         alert("failure on code verification");
       }

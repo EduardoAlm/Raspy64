@@ -113,6 +113,7 @@ export default {
   },
   computed: {
     userloggedIn() {
+      console.log(this.$store.getters.userloggedIn);
       return this.$store.getters.userloggedIn;
     }
   },
@@ -121,19 +122,19 @@ export default {
     async getrasp() {
       var raspadinha;
       const RSAkeys = cryptico.generateRSAKey("WeLoveInacio", 1024);
+      const pk = cryptico.publicKeyString(RSAkeys);
       await firebase
         .database()
         .ref("/Users/" + this.$store.state.user)
         .once("value")
         .then(function(snapshot) {
-          raspadinha =
-            cryptico.decrypt(
-              snapshot.val() && snapshot.val().raspadinha,
-              RSAkeys
-            ).plaintext || "Anonymous";
+          raspadinha = cryptico.decrypt(
+            snapshot.val() && snapshot.val().raspadinha,
+            RSAkeys
+          ).plaintext;
         });
-      console.log(raspadinha);
-      if (raspadinha == "0") {
+      console.log(Math.floor(raspadinha));
+      if (raspadinha == 0) {
         var d = new Date();
         console.log(
           d.getHours() +
@@ -145,7 +146,7 @@ export default {
         var rntimer = d.getHours() * 60 + d.getMinutes();
         console.log(this.$store.state.usertimer);
         var timer = rntimer - this.$store.state.usertimer;
-        console.log(timer);
+        console.log(timer + this.$store.state.timeleft);
 
         if (timer >= 60) {
           this.letsroll = true;
@@ -153,13 +154,31 @@ export default {
           alert("Not yet you still have to wait " + (60 - timer));
           this.letsroll = false;
         }
+      } else if (raspadinha == 1) {
+        await firebase
+          .database()
+          .ref("Users/" + this.$store.state.user)
+          .update({
+            raspadinha: cryptico.encrypt(0, pk).cipher
+          });
+        this.letsroll = true;
+      } else {
+        this.letsroll = false;
       }
       const val = await this.$store.dispatch("getrasp");
       this.victorious = val;
-      if (this.victorious) {
+      if (this.victorious && this.letsroll) {
         this.aud1.play();
-      } else {
+        await this.$store.dispatch(
+          "setTimer",
+          d.getHours() * 60 + d.getMinutes()
+        );
+      } else if (!this.victorious && this.letsroll) {
         this.aud2.play();
+        await this.$store.dispatch(
+          "setTimer",
+          d.getHours() * 60 + d.getMinutes()
+        );
       }
     }
   },

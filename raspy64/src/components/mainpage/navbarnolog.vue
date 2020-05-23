@@ -74,6 +74,7 @@ export default {
   },
   computed: {
     userloggedIn() {
+      console.log(this.$store.getters.userloggedIn);
       return this.$store.getters.userloggedIn;
     }
   },

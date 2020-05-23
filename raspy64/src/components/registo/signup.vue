@@ -28,7 +28,7 @@
             @click:append="confirmPasswordShow = !confirmPasswordShow"
           ></v-text-field>
 
-          <v-btn :disabled="!valid" class="mx-2" color="success" @click="validate">Register</v-btn>
+          <v-btn :disabled="!valid" class="mx-2" color="success" @click="validate">Sign Up</v-btn>
 
           <v-btn color="error" class="mx-2" @click="reset">Reset Fields</v-btn>
         </v-form>
@@ -58,7 +58,14 @@ export default {
     ],
     password: "",
     confirmPassword: "",
-    passwordRules: [v => !!v || "Password and Confirm password Required"]
+    passwordRules: [v => !!v || "Password and Confirm password Required"],
+    links1: [
+      {
+        id: 1,
+        text: "Raspy64",
+        page: "/"
+      }
+    ]
   }),
   methods: {
     validate() {
@@ -79,14 +86,14 @@ export default {
       await this.$store.dispatch("signUpAction", user);
 
       var cipherusername = cryptico.encrypt(user.username, pk);
-      var cipherrasp = cryptico.encrypt("0", pk);
-      var cipherrasptimer = cryptico.encrypt("0", pk);
+      var cipherrasp = cryptico.encrypt(1, pk);
+      var cipherrasptimer = 0;
       var cipheremail = cryptico.encrypt(user.email, pk);
       var cipherphone = cryptico.encrypt(user.phonenumber, pk);
       const regist = {
         email: cipheremail.cipher,
         rasp: cipherrasp.cipher,
-        rasptimer: cipherrasptimer.cipher,
+        rasptimer: cipherrasptimer,
         phone: cipherphone.cipher,
         username: cipherusername.cipher
       };
