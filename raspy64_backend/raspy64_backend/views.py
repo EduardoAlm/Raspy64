@@ -29,6 +29,10 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import random
 from json import JSONEncoder
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+import operator
+
 
 config = {
     'apiKey': "AIzaSyC-aDSTtVmZUJD6EsQQqRSwsARKeviP1ss",
@@ -44,21 +48,19 @@ config = {
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 private_key = None
+private_key = rsa.generate_private_key(
+    public_exponent=65537, key_size=2048, backend=default_backend())
+public_key = private_key.public_key()
+pem = public_key.public_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+x0 = random.randint(0, 65537)
+x1 = random.randint(0, 65537)
 
 
 class FirstCommView(APIView):
     def get(self, request, format=None):
-        private_key = rsa.generate_private_key(
-            public_exponent=65537, key_size=2048, backend=default_backend())
-
-        x0 = random.randint(0, 65537)
-        x1 = random.randint(0, 65537)
-
-        public_key = private_key.public_key()
-
-        pem = public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo)
 
         result = {
             'N': pem,
@@ -71,6 +73,26 @@ class FirstCommView(APIView):
 
 
 class RealReqView(APIView):
+    def get(self, request, format=None, v=None, x0=None, x1=None):
+
+        m0 = random.randint(0, 1)
+        m1 = random.randint(0, 1)
+
+        k0 = private_key.decrypt(operator.xor(v, x0), padding.OAEP(mgf=padding.MGF1(
+            algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+
+        k1 = private_key.decrypt(operator.xor(v, x1), padding.OAEP(mgf=padding.MGF1(
+            algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+
+        result = {
+            'm0_linha': operator.xor(m0, k0),
+            'm1_linha': operator.xor(m1, k1),
+        }
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+'''class RealReqView(APIView):
     def get(self, request, format=None):
         draw = []
         weighted_random = [1] * 10 + [0] * 90
@@ -90,4 +112,4 @@ class RealReqView(APIView):
             'msg': res2
         }
 
-        return Response(result, status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)'''
