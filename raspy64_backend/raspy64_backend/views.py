@@ -78,10 +78,10 @@ class RealReqView(APIView):
         m0 = random.randint(0, 1)
         m1 = random.randint(0, 1)
 
-        k0 = private_key.decrypt(operator.xor(v, x0), padding.OAEP(mgf=padding.MGF1(
+        k0 = private_key.decrypt(str(operator.xor(v, x0)), padding.OAEP(mgf=padding.MGF1(
             algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
 
-        k1 = private_key.decrypt(operator.xor(v, x1), padding.OAEP(mgf=padding.MGF1(
+        k1 = private_key.decrypt(str(operator.xor(v, x1)), padding.OAEP(mgf=padding.MGF1(
             algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
 
         result = {
