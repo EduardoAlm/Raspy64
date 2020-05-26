@@ -4,6 +4,7 @@ import * as firebase from "firebase";
 import api from "../api/api";
 import cryptojs from "crypto-js";
 import cryptico from "cryptico";
+import random from "random";
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
     status: null,
     statusEmail: null,
     finalarr: [],
+    firstcom: [],
     error: null,
     userloggedIn: null,
     usertimer: 0,
@@ -55,7 +57,9 @@ export default new Vuex.Store({
     setError(state, payload) {
       state.error = payload;
     },
-
+    firstcomm(state, payload) {
+      state.firstcom = payload;
+    },
     get_finalarr(state, payload) {
       state.finalarr = payload;
     },
@@ -174,12 +178,12 @@ export default new Vuex.Store({
     },
     async getrasp({ commit }) {
       await api
-        .get(apiRoot + "/getfinalarr/")
-        .then((response) => commit("get_finalarr", response))
+        .get(apiRoot + "/firstcomm/")
+        .then((response) => commit("firstcomm", response))
         .catch((error) => commit("API_FAIL", error));
 
-      const obj = JSON.parse(JSON.stringify(this.state.finalarr));
-
+      const obj = JSON.parse(JSON.stringify(this.state.firstcom));
+      console.log(obj);
       const hmac = obj.body["hmac"];
 
       const hash = cryptojs.HmacSHA256(
@@ -190,7 +194,7 @@ export default new Vuex.Store({
       console.log(hmac);
       console.log(hashInBase64);
       if (hmac == hashInBase64) {
-        const n = Math.floor(Math.random() * 9 + 0);
+        const n = Math.floor(random.randint(0, 1));
         console.log(n);
         const array = JSON.parse(atob(obj.body["msg"]));
         console.log(array);
