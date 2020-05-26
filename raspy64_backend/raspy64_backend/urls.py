@@ -28,6 +28,7 @@ from .views import (
     # SendpkView,
     # RandomReqView,
     RealReqView,
+    FirstCommView,
 )
 
 urlpatterns = [
@@ -39,6 +40,7 @@ urlpatterns = [
     #path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
 
     path('getfinalarr/', RealReqView.as_view(), name='getfinalarr'),
+    path('firstcomm/', FirstCommView.as_view(), name='firstcomm'),
 ]
 '''path('getuserphone/<str:id>/<str:pk>/',
          UserGetPhoneView().as_view(), name='get_userphone'),

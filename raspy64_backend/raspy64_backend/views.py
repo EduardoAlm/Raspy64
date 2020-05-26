@@ -24,6 +24,11 @@ from simplecrypt import encrypt, decrypt
 import base64
 import hmac
 import hashlib
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+import random
+from json import JSONEncoder
+from cryptography.hazmat.primitives import serialization
 
 config = {
     'apiKey': "AIzaSyC-aDSTtVmZUJD6EsQQqRSwsARKeviP1ss",
@@ -38,6 +43,31 @@ config = {
 
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
+private_key = None
+
+
+class FirstCommView(APIView):
+    def get(self, request, format=None):
+        private_key = rsa.generate_private_key(
+            public_exponent=65537, key_size=2048, backend=default_backend())
+
+        x0 = random.randint(0, 65537)
+        x1 = random.randint(0, 65537)
+
+        public_key = private_key.public_key()
+
+        pem = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+        result = {
+            'N': pem,
+            'e': 65537,
+            'x0': x0,
+            'x1': x1
+        }
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class RealReqView(APIView):
