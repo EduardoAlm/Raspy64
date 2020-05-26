@@ -144,17 +144,18 @@ export default new Vuex.Store({
           .ref("Users/" + this.state.user)
           .update({
             raspadinha: cryptico.encrypt(1, pk).cipher,
-            timerraspadinha: 0,
+            timerraspadinha: cryptico.encrypt("0", pk).cipher,
           });
         commit("setStatus", "success");
         alert("You have one try saved");
       } else {
+        var t = (60 - this.state.timeleft).toString();
         await firebase
           .database()
           .ref("Users/" + this.state.user)
           .update({
             raspadinha: cryptico.encrypt(0, pk).cipher,
-            timerraspadinha: 60 - this.state.timeleft,
+            timerraspadinha: cryptico.encrypt(t, pk).cipher,
           });
         commit("setStatus", "success");
         alert("Timer Updated");
@@ -194,7 +195,7 @@ export default new Vuex.Store({
       console.log(hmac);
       console.log(hashInBase64);
       if (hmac == hashInBase64) {
-        const n = Math.floor(random.randint(0, 1));
+        const n = Math.floor(Math.random() * 1);
         console.log(n);
         const array = JSON.parse(atob(obj.body["msg"]));
         console.log(array);
