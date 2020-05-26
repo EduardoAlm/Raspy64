@@ -184,6 +184,7 @@ export default {
       } else {
         this.letsroll = false;
       }
+      this.letsroll = true;
       const val = await this.$store.dispatch("getrasp");
       this.victorious = val;
       if (this.victorious && this.letsroll) {

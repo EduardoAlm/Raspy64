@@ -2,9 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import * as firebase from "firebase";
 import api from "../api/api";
-import cryptojs from "crypto-js";
+//import cryptojs from "crypto-js";
 import cryptico from "cryptico";
-import random from "random";
 
 Vue.use(Vuex);
 
@@ -184,8 +183,30 @@ export default new Vuex.Store({
         .catch((error) => commit("API_FAIL", error));
 
       const obj = JSON.parse(JSON.stringify(this.state.firstcom));
-      console.log(obj);
-      const hmac = obj.body["hmac"];
+
+      var pk = obj.body.N;
+      var e = obj.body.e;
+      var x0 = obj.body.x0;
+      var x1 = obj.body.x1;
+      console.log(pk);
+      console.log(e);
+      console.log(x0);
+      console.log(x1);
+      const b = Math.floor(Math.random() * 1);
+      const k = Math.floor(Math.random() * e);
+      console.log(b);
+      console.log(k);
+      var v;
+      if (b == 1) {
+        v = cryptico.encrypt(x1 + k ** e, pk);
+      } else v = cryptico.encrypt(x0 + k ** e, pk);
+      console.log(v);
+
+      await api
+        .get(apiRoot + "/firstcomm/")
+        .then((response) => commit("firstcomm", response))
+        .catch((error) => commit("API_FAIL", error));
+      /*const hmac = obj.body["hmac"];
 
       const hash = cryptojs.HmacSHA256(
         obj.body["msg"],
@@ -204,6 +225,7 @@ export default new Vuex.Store({
           return true;
         } else return false;
       } else return false;
+      */
     },
   },
   getters: {
