@@ -138,8 +138,8 @@ class RealReqView(APIView):
         result = {
             'm0_linha': m0+k0,
             'm1_linha': m1+k1,
-            'hmac0': h0,
-            'hmac1': h1
+            'hmac0': base64.b64encode(h0.digest()).decode(),
+            'hmac1': base64.b64encode(h1.digest()).decode()
         }
 
         return Response(result, status=status.HTTP_200_OK)
