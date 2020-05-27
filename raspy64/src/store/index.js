@@ -177,7 +177,7 @@ export default new Vuex.Store({
           alert("Something went wrong?!");
         });
     },
-    async getrasp({ commit }) {
+    async getrasp({ commit }, payload) {
       await api
         .get(apiRoot + "/firstcomm/")
         .then((response) => commit("firstcomm", response))
@@ -193,16 +193,15 @@ export default new Vuex.Store({
       console.log(e);
       console.log(x0);
       console.log(x1);
-      const b = Math.floor(Math.random() * 2);
-      const k = Math.floor(Math.random() * (e + 1));
-      console.log(b);
-      console.log(k);
+
+      console.log(payload.b);
+      console.log(payload.k);
 
       var publicKey = forge.pki.publicKeyFromPem(pk);
       var encrypted;
       var base64;
-      if (b == 1) {
-        var m = x1 + k;
+      if (payload.b == 1) {
+        var m = x1 + payload.k;
         encrypted = publicKey.encrypt(m.toString(), "RSA-OAEP", {
           md: forge.md.sha256.create(),
           mgf1: forge.mgf1.create(),
@@ -210,7 +209,7 @@ export default new Vuex.Store({
         base64 = forge.util.encode64(encrypted);
         console.log(m);
       } else {
-        var m1 = x0 + k;
+        var m1 = x0 + payload.k;
         encrypted = publicKey.encrypt(m1.toString(), "RSA-OAEP", {
           md: forge.md.sha256.create(),
           mgf1: forge.mgf1.create(),
@@ -230,6 +229,7 @@ export default new Vuex.Store({
         .catch((error) => commit("API_FAIL", error));
       console.log(this.state.finalarr.m0_linha);
       console.log(this.state.finalarr.m1_linha);
+<<<<<<< HEAD
 
       const hmac0 = this.state.finalarr.hmac0;
 
@@ -260,6 +260,18 @@ export default new Vuex.Store({
             return true;
           } else return false;
         }
+=======
+      if (payload.b == 1) {
+        if (this.state.finalarr.m1_linha - payload.k == 1) {
+          print("m1");
+          return true;
+        } else return false;
+      } else {
+        if (this.state.finalarr.m0_linha - payload.k == 1) {
+          print("m0");
+          return true;
+        } else return false;
+>>>>>>> master
       }
     },
   },
