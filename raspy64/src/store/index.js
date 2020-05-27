@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import * as firebase from "firebase";
 import api from "../api/api";
-//import cryptojs from "crypto-js";
+import cryptojs from "crypto-js";
 import cryptico from "cryptico";
 import forge from "node-forge";
 
@@ -230,16 +230,36 @@ export default new Vuex.Store({
         .catch((error) => commit("API_FAIL", error));
       console.log(this.state.finalarr.m0_linha);
       console.log(this.state.finalarr.m1_linha);
-      if (b == 1) {
-        if (this.state.finalarr.m1_linha - k == 1) {
-          print("m1");
-          return true;
-        } else return false;
-      } else {
-        if (this.state.finalarr.m0_linha - k == 1) {
-          print("m0");
-          return true;
-        } else return false;
+
+      const hmac0 = this.state.finalarr.hmac0;
+
+      const hmac1 = this.state.finalarr.hmac1;
+
+      const hash0 = cryptojs.HmacSHA256(
+        this.finalarr.m0_linha,
+        "WeLoveInacio".toString("ascii")
+      );
+      const hash0InBase64 = cryptojs.enc.Base64.stringify(hash0);
+      console.log(hmac0);
+      console.log(hash0InBase64);
+      const hash1 = cryptojs.HmacSHA256(
+        this.finalarr.m1_linha,
+        "WeLoveInacio".toString("ascii")
+      );
+      const hash1InBase64 = cryptojs.enc.Base64.stringify(hash1);
+
+      if (hmac0 == hash0InBase64 && hmac1 == hash1InBase64) {
+        if (b == 1) {
+          if (this.state.finalarr.m1_linha - k == 1) {
+            print("m1");
+            return true;
+          } else return false;
+        } else {
+          if (this.state.finalarr.m0_linha - k == 1) {
+            print("m0");
+            return true;
+          } else return false;
+        }
       }
     },
   },

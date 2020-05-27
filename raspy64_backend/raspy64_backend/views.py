@@ -127,8 +127,8 @@ class RealReqView(APIView):
         print(m0)
         print(m1)
 
-        res0 = base64.b64encode(m0+k0)
-        res1 = base64.b64encode(m1+k1)
+        res0 = base64.b64encode(bytes(str(m0+k0), "utf-8"))
+        res1 = base64.b64encode(bytes(str(m1+k1), "utf-8"))
 
         h0 = hmac.new(bytes("WeLoveInacio", 'utf-8'),
                       res0, hashlib.sha256)
