@@ -57,5 +57,7 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "main": "index.js",
+  "license": "MIT"
 }
