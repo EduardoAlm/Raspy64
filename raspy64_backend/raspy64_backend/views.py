@@ -126,9 +126,20 @@ class RealReqView(APIView):
             compute_message()
         print(m0)
         print(m1)
+
+        res0 = base64.b64encode(m0+k0)
+        res1 = base64.b64encode(m1+k1)
+
+        h0 = hmac.new(bytes("WeLoveInacio", 'utf-8'),
+                      res0, hashlib.sha256)
+
+        h1 = hmac.new(bytes("WeLoveInacio", 'utf-8'),
+                      res1, hashlib.sha256)
         result = {
             'm0_linha': m0+k0,
             'm1_linha': m1+k1,
+            'hmac0': h0,
+            'hmac1': h1
         }
 
         return Response(result, status=status.HTTP_200_OK)

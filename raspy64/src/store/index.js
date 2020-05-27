@@ -193,8 +193,8 @@ export default new Vuex.Store({
       console.log(e);
       console.log(x0);
       console.log(x1);
-      const b = Math.floor(Math.random() * (1 - 0 + 1) + 0);
-      const k = Math.floor(Math.random() * (e - 1 + 1) + 1);
+      const b = Math.floor(Math.random() * 2);
+      const k = Math.floor(Math.random() * (e + 1));
       console.log(b);
       console.log(k);
 
