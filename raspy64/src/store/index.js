@@ -194,7 +194,6 @@ export default new Vuex.Store({
       console.log(x0);
       console.log(x1);
 
-      console.log(payload.b);
       console.log(payload.k);
 
       var publicKey = forge.pki.publicKeyFromPem(pk);
@@ -227,51 +226,48 @@ export default new Vuex.Store({
         })
         .then((response) => commit("get_finalarr", response.body))
         .catch((error) => commit("API_FAIL", error));
-      console.log(this.state.finalarr.m0_linha);
-      console.log(this.state.finalarr.m1_linha);
-<<<<<<< HEAD
 
       const hmac0 = this.state.finalarr.hmac0;
-
       const hmac1 = this.state.finalarr.hmac1;
-
+      console.log(hmac0);
+      console.log(hmac1);
       const hash0 = cryptojs.HmacSHA256(
-        this.finalarr.m0_linha,
+        this.state.finalarr.m0_linha,
         "WeLoveInacio".toString("ascii")
       );
       const hash0InBase64 = cryptojs.enc.Base64.stringify(hash0);
-      console.log(hmac0);
+      console.log(hash0);
       console.log(hash0InBase64);
+
       const hash1 = cryptojs.HmacSHA256(
-        this.finalarr.m1_linha,
+        this.state.finalarr.m1_linha,
         "WeLoveInacio".toString("ascii")
       );
       const hash1InBase64 = cryptojs.enc.Base64.stringify(hash1);
+      console.log(hash1);
+      console.log(hash1InBase64);
+      console.log(JSON.parse(atob(this.state.finalarr.m0_linha)) - payload.k);
+      console.log(JSON.parse(atob(this.state.finalarr.m1_linha)) - payload.k);
+      console.log(payload.b);
 
       if (hmac0 == hash0InBase64 && hmac1 == hash1InBase64) {
-        if (b == 1) {
-          if (this.state.finalarr.m1_linha - k == 1) {
-            print("m1");
+        if (payload.b == 1) {
+          if (JSON.parse(atob(this.state.finalarr.m1_linha)) - payload.k == 1) {
+            console.log("m1-true");
             return true;
-          } else return false;
+          } else {
+            console.log("m1-false");
+            return false;
+          }
         } else {
-          if (this.state.finalarr.m0_linha - k == 1) {
-            print("m0");
+          if (JSON.parse(atob(this.state.finalarr.m0_linha)) - payload.k == 1) {
+            console.log("m0-true");
             return true;
-          } else return false;
+          } else {
+            console.log("m0-false");
+            return false;
+          }
         }
-=======
-      if (payload.b == 1) {
-        if (this.state.finalarr.m1_linha - payload.k == 1) {
-          print("m1");
-          return true;
-        } else return false;
-      } else {
-        if (this.state.finalarr.m0_linha - payload.k == 1) {
-          print("m0");
-          return true;
-        } else return false;
->>>>>>> master
       }
     },
   },
