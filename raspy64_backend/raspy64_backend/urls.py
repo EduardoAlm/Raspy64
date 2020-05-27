@@ -39,7 +39,7 @@ urlpatterns = [
 
     #path('getinitarr/', RandomReqView.as_view(), name='getinitarr'),
 
-    path('getfinalarr/<int:v>/<int:x0>/<int:x1>/',
+    path('getfinalarr/',
          RealReqView.as_view(), name='getfinalarr'),
     path('firstcomm/', FirstCommView.as_view(), name='firstcomm'),
 ]

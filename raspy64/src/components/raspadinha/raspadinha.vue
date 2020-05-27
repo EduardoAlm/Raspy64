@@ -38,10 +38,7 @@
                   <v-btn
                     color="orange"
                     text
-                    @click="
-                      dialog = false;
-                      aud3.play();
-                    "
+                    @click="(dialog = false), aud3.play()"
                     >Okey okey!</v-btn
                   >
                 </v-card-actions>

@@ -15,8 +15,12 @@ import datetime
 import time
 import pyrebase
 
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Hash import SHA256
+from base64 import b64decode
 import Crypto
 from Crypto.PublicKey import RSA
+import rsa
 from Crypto import Random
 import numpy as np
 from numpy.random import choice
@@ -47,46 +51,84 @@ config = {
 
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
+
+key_pair = RSA.generate(2048, e=537)
+private_key = open("privatekey.pem", "wb")
+private_key.write(key_pair.exportKey(passphrase="WeLoveInacio"))
+private_key.close()
+public_key = open("public_key.pem", "wb")
+public_key.write(key_pair.publickey().exportKey())
+public_key.close()
+'''
 private_key = None
 private_key = rsa.generate_private_key(
-    public_exponent=65537, key_size=2048, backend=default_backend())
+    public_exponent=65537, key_size=1024, backend=default_backend())
 public_key = private_key.public_key()
 pem = public_key.public_bytes(
     encoding=serialization.Encoding.PEM,
     format=serialization.PublicFormat.SubjectPublicKeyInfo)
+'''
+x0 = random.randint(0, 537)
+x1 = random.randint(0, 537)
+m0 = -1
+m1 = -1
 
-x0 = random.randint(0, 65537)
-x1 = random.randint(0, 65537)
+
+def file_get_contents(filename):
+    with open(filename) as f:
+        return f.read()
+
+
+def compute_message():
+    m0 = [1] * 10 + [0] * 90
+    m1 = [1] * 10 + [0] * 90
 
 
 class FirstCommView(APIView):
     def get(self, request, format=None):
 
         result = {
-            'N': pem,
-            'e': 65537,
+            'N': file_get_contents("public_key.pem"),
+            'e': 537,
             'x0': x0,
             'x1': x1
         }
-
+        compute_message()
         return Response(result, status=status.HTTP_200_OK)
 
 
 class RealReqView(APIView):
-    def get(self, request, format=None, v=None, x0=None, x1=None):
-
+    def post(self, request, format=None):
+        v = b64decode(request.data['base64'])
+        vlen = len(v)
+        x0 = request.data['x0']
+        x1 = request.data['x1']
         m0 = random.randint(0, 1)
         m1 = random.randint(0, 1)
+        print(type(v))
+        print(type(x0))
+        print(type(x1))
 
-        k0 = private_key.decrypt(str(operator.xor(v, x0)), padding.OAEP(mgf=padding.MGF1(
-            algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-
-        k1 = private_key.decrypt(str(operator.xor(v, x1)), padding.OAEP(mgf=padding.MGF1(
-            algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-
+        key = RSA.importKey(file_get_contents(
+            "privatekey.pem"), passphrase="WeLoveInacio")
+        print("h1")
+        cipher = PKCS1_OAEP.new(key, hashAlgo=SHA256)
+        print("h2")
+        decrypted_message = cipher.decrypt(v)
+        print(decrypted_message)
+        decrypted = decrypted_message.decode()
+        print(decrypted)
+        k0 = int(decrypted) - x0
+        print(k0)
+        k1 = int(decrypted) - x1
+        print(k1)
+        while m1 == -1 | m0 == -1:
+            compute_message()
+        print(m0)
+        print(m1)
         result = {
-            'm0_linha': operator.xor(m0, k0),
-            'm1_linha': operator.xor(m1, k1),
+            'm0_linha': m0+k0,
+            'm1_linha': m1+k1,
         }
 
         return Response(result, status=status.HTTP_200_OK)

@@ -4,6 +4,7 @@ import * as firebase from "firebase";
 import api from "../api/api";
 //import cryptojs from "crypto-js";
 import cryptico from "cryptico";
+import forge from "node-forge";
 
 Vue.use(Vuex);
 
@@ -15,7 +16,7 @@ export default new Vuex.Store({
     timeleft: 0,
     status: null,
     statusEmail: null,
-    finalarr: [],
+    finalarr: null,
     firstcom: [],
     error: null,
     userloggedIn: null,
@@ -192,40 +193,54 @@ export default new Vuex.Store({
       console.log(e);
       console.log(x0);
       console.log(x1);
-      const b = Math.floor(Math.random() * 1);
-      const k = Math.floor(Math.random() * e);
+      const b = Math.floor(Math.random() * (1 - 0 + 1) + 0);
+      const k = Math.floor(Math.random() * (e - 1 + 1) + 1);
       console.log(b);
       console.log(k);
-      var v;
+
+      var publicKey = forge.pki.publicKeyFromPem(pk);
+      var encrypted;
+      var base64;
       if (b == 1) {
-        v = cryptico.encrypt(x1 + k ** e, pk);
-      } else v = cryptico.encrypt(x0 + k ** e, pk);
-      console.log(v);
+        var m = x1 + k;
+        encrypted = publicKey.encrypt(m.toString(), "RSA-OAEP", {
+          md: forge.md.sha256.create(),
+          mgf1: forge.mgf1.create(),
+        });
+        base64 = forge.util.encode64(encrypted);
+        console.log(m);
+      } else {
+        var m1 = x0 + k;
+        encrypted = publicKey.encrypt(m1.toString(), "RSA-OAEP", {
+          md: forge.md.sha256.create(),
+          mgf1: forge.mgf1.create(),
+        });
+        base64 = forge.util.encode64(encrypted);
+        console.log(m1);
+      }
+      console.log(base64);
 
       await api
-        .get(apiRoot + "/firstcomm/")
-        .then((response) => commit("firstcomm", response))
+        .post(apiRoot + "/getfinalarr/", {
+          base64: base64,
+          x0: x0,
+          x1: x1,
+        })
+        .then((response) => commit("get_finalarr", response.body))
         .catch((error) => commit("API_FAIL", error));
-      /*const hmac = obj.body["hmac"];
-
-      const hash = cryptojs.HmacSHA256(
-        obj.body["msg"],
-        "OneLoveInacio".toString("ascii")
-      );
-      const hashInBase64 = cryptojs.enc.Base64.stringify(hash);
-      console.log(hmac);
-      console.log(hashInBase64);
-      if (hmac == hashInBase64) {
-        const n = Math.floor(Math.random() * 1);
-        console.log(n);
-        const array = JSON.parse(atob(obj.body["msg"]));
-        console.log(array);
-        console.log(array[n]);
-        if (array[n] == 1) {
+      console.log(this.state.finalarr.m0_linha);
+      console.log(this.state.finalarr.m1_linha);
+      if (b == 1) {
+        if (this.state.finalarr.m1_linha - k == 1) {
+          print("m1");
           return true;
         } else return false;
-      } else return false;
-      */
+      } else {
+        if (this.state.finalarr.m0_linha - k == 1) {
+          print("m0");
+          return true;
+        } else return false;
+      }
     },
   },
   getters: {
