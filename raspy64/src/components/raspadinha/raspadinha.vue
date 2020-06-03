@@ -22,7 +22,7 @@
                   label="Choose a number bigger than 0"
                   required
                 ></v-text-field>
-                <div v-if="b != -1 && k!=-1">
+                <div v-if="b != -1 && k != -1">
                   <v-btn class="w3-hover-white" v-on="on" @click="getrasp()">Lets win fake money!</v-btn>
                 </div>
                 <div v-else>
@@ -34,10 +34,7 @@
               <v-card>
                 <v-card-title class="headline orange darken-1" primary-title>Sorry!</v-card-title>
 
-                <v-card-text>
-                  Not yet you still have to wait
-                  {{ this.$store.state.timeleft }}.
-                </v-card-text>
+                <v-card-text>Not yet you still have to wait.</v-card-text>
                 <v-divider></v-divider>
 
                 <v-card-actions>
@@ -61,7 +58,11 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="orange" text @click="dialog = false">Thanks Man!</v-btn>
+                    <v-btn
+                      color="orange"
+                      text
+                      @click="dialog = false, letsroll=false, victorious = false"
+                    >Thanks Man!</v-btn>
                   </v-card-actions>
                 </v-card>
               </div>
@@ -79,7 +80,11 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="orange" text @click="dialog = false">Never Surrender!</v-btn>
+                    <v-btn
+                      color="orange"
+                      text
+                      @click="dialog = false, letsroll=false, victorious = false"
+                    >Never Surrender!</v-btn>
                   </v-card-actions>
                 </v-card>
               </div>
@@ -159,12 +164,12 @@ export default {
         var rntimer = d.getHours() * 60 + d.getMinutes();
         console.log(this.$store.state.usertimer);
         var timer = rntimer - this.$store.state.usertimer;
-        console.log(timer + this.$store.state.timeleft);
+        console.log(timer);
 
-        if (timer >= 60) {
+        if (timer >= 2) {
           this.letsroll = true;
         } else {
-          alert("Not yet you still have to wait " + (60 - timer));
+          alert("Not yet you still have to wait " + (3 - timer));
           this.letsroll = false;
         }
       } else if (raspadinha == 1) {
@@ -178,7 +183,6 @@ export default {
       } else {
         this.letsroll = false;
       }
-      this.letsroll = true;
 
       console.log(this.b);
       console.log(this.k);
@@ -187,21 +191,21 @@ export default {
         b: Math.round(this.b),
         k: Math.round(this.k)
       };
-      const val = await this.$store.dispatch("getrasp", bk);
-      this.victorious = val;
-      if (this.victorious && this.letsroll) {
-        //this.aud1.play();
-        await this.$store.dispatch(
-          "setTimer",
-          d.getHours() * 60 + d.getMinutes()
-        );
-      } else if (!this.victorious && this.letsroll) {
-        // this.aud2.play();
+      var val = "";
+      if (this.letsroll == true) {
+        val = await this.$store.dispatch("getrasp", bk);
         await this.$store.dispatch(
           "setTimer",
           d.getHours() * 60 + d.getMinutes()
         );
       }
+      this.victorious = val;
+      if (this.victorious && this.letsroll) {
+        this.aud1.play();
+      } else if (!this.victorious && this.letsroll) {
+        this.aud2.play();
+      }
+
       this.b = -1;
       this.k = -1;
     }

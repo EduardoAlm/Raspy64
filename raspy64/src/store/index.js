@@ -79,7 +79,7 @@ export default new Vuex.Store({
       var d = new Date();
       var rntimer = d.getHours() * 60 + d.getMinutes();
       var timer = rntimer - this.state.usertimer;
-      commit("setTimeLeft", 60 - timer);
+      commit("setTimeLeft", 3 - timer);
     },
     async signUpAction({ commit }, payload) {
       commit("setStatus", "loading");
@@ -149,7 +149,7 @@ export default new Vuex.Store({
         commit("setStatus", "success");
         alert("You have one try saved");
       } else {
-        var t = (60 - this.state.timeleft).toString();
+        var t = (3 - this.state.timeleft).toString();
         await firebase
           .database()
           .ref("Users/" + this.state.user)
